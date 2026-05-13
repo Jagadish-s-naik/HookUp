@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 
 export interface UserProfile {
   id: string;
   email: string;
   name: string | null;
+  full_name: string | null;
   avatar_url: string | null;
   niche: string | null;
   platforms: string[] | null;
@@ -12,6 +13,8 @@ export interface UserProfile {
   plan: 'free' | 'starter' | 'pro' | 'agency';
   onboarding_complete: boolean;
   hooks_used_today: number;
+  hooks_used_month: number;
+  extra_hook_credits: number;
   brand_voice_summary: string | null;
   referral_code: string | null;
   affiliate_earnings: number;
