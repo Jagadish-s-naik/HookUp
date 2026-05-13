@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { loadRazorpayScript, openRazorpayCheckout } from '../../lib/razorpay';
 import Button from '../ui/Button';
@@ -62,6 +63,7 @@ const plans = [
 export default function UpgradeModal() {
   const { isUpgradeModalOpen, upgradeReason, closeUpgradeModal } = useUIStore();
   const { user, profile } = useAuthStore();
+  const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   useEffect(() => {
@@ -118,7 +120,7 @@ export default function UpgradeModal() {
         handler: async (response: any) => {
           toast.success("Payment successful!");
           closeUpgradeModal();
-          window.location.href = '/payment/success';
+          navigate('/payment/success');
         },
         modal: {
           ondismiss: () => {
