@@ -1,8 +1,12 @@
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, Search, User, Zap } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { usePlan } from '../../hooks/usePlan';
+import { useUIStore } from '../../store/uiStore';
 
 export default function TopBar() {
   const { profile, user } = useAuthStore();
+  const { plan, usage, limits, remainingToday, isFree } = usePlan();
+  const { openUpgradeModal } = useUIStore();
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
   const initial = displayName.charAt(0).toUpperCase();
@@ -21,11 +25,24 @@ export default function TopBar() {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-semibold">
-          <span>Starter Plan</span>
-          <div className="w-px h-3 bg-primary/20" />
-          <span>5/5 free hooks today</span>
-        </div>
+        <button 
+          onClick={() => isFree && openUpgradeModal('daily_hooks')}
+          className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+            isFree 
+              ? 'bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer' 
+              : 'bg-emerald-500/10 text-emerald-600'
+          }`}
+        >
+          <span className="capitalize">{plan} Plan</span>
+          <div className={`w-px h-3 ${isFree ? 'bg-primary/20' : 'bg-emerald-500/20'}`} />
+          <span>
+            {isFree 
+              ? `${usage.today}/${limits.dailyHooks} hooks used today`
+              : 'Unlimited Daily Generation'
+            }
+          </span>
+          {isFree && <Zap className="w-3 h-3 ml-1 fill-current" />}
+        </button>
 
         <button className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative">
           <Bell className="w-5 h-5" />

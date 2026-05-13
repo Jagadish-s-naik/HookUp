@@ -21,6 +21,8 @@ import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
+import { usePlan } from '../hooks/usePlan';
+import { useUIStore } from '../store/uiStore';
 
 const platforms = [
   { id: 'instagram', label: 'Instagram', icon: Share2 },
@@ -73,6 +75,9 @@ interface HookResult {
 
 export default function Generate() {
   const { profile } = useAuthStore();
+  const { isFree, canGenerate, remainingToday, plan } = usePlan();
+  const { openUpgradeModal } = useUIStore();
+  
   const [platform, setPlatform] = useState('instagram');
   const [topic, setTopic] = useState('');
   const [tone, setTone] = useState('curiosity');
@@ -97,6 +102,11 @@ export default function Generate() {
   const handleGenerate = async () => {
     if (!topic) {
       toast.error('Please enter a topic or context');
+      return;
+    }
+
+    if (!canGenerate) {
+      openUpgradeModal('daily_hooks');
       return;
     }
     
@@ -314,15 +324,19 @@ export default function Generate() {
                   ))}
                 </>
               ) : generatedHooks.length > 0 ? (
-                generatedHooks.map((hook, idx) => (
-                  <HookCard 
-                    key={idx} 
-                    hook={hook} 
-                    idx={idx} 
-                    onCopy={() => copyToClipboard(hook.hook_text)} 
-                    onToggleSave={() => toggleSave(hook.id, hook.is_saved)}
-                  />
-                ))
+                generatedHooks.map((hook, idx) => {
+                  const isBlurred = isFree && idx >= 3;
+                  return (
+                    <HookCard 
+                      key={idx} 
+                      hook={hook} 
+                      idx={idx} 
+                      isBlurred={isBlurred}
+                      onCopy={() => isBlurred ? openUpgradeModal('blurred_hooks') : copyToClipboard(hook.hook_text)} 
+                      onToggleSave={() => isBlurred ? openUpgradeModal('blurred_hooks') : toggleSave(hook.id, hook.is_saved)}
+                    />
+                  );
+                })
               ) : (
                 <div className="col-span-full flex flex-col items-center justify-center py-20 text-center space-y-6 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem] bg-slate-50/50 dark:bg-slate-900/50">
                   <div className="w-20 h-20 rounded-3xl bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center ring-1 ring-slate-100 dark:ring-slate-800">
@@ -344,15 +358,32 @@ export default function Generate() {
   );
 }
 
-function HookCard({ hook, idx, onCopy, onToggleSave }: { hook: HookResult, idx: number, onCopy: () => void, onToggleSave: () => void }) {
+function HookCard({ 
+  hook, 
+  idx, 
+  onCopy, 
+  onToggleSave,
+  isBlurred 
+}: { 
+  hook: HookResult, 
+  idx: number, 
+  onCopy: () => void, 
+  onToggleSave: () => void,
+  isBlurred?: boolean
+}) {
+  const { openUpgradeModal } = useUIStore();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: idx * 0.05 }}
-      className="glass p-6 rounded-2xl border-slate-100 dark:border-slate-800 hover:border-primary/30 transition-all group relative flex flex-col justify-between h-full hover:shadow-2xl hover:shadow-primary/5"
+      className={`glass p-6 rounded-2xl border-slate-100 dark:border-slate-800 hover:border-primary/30 transition-all group relative flex flex-col justify-between h-full hover:shadow-2xl hover:shadow-primary/5 ${
+        isBlurred ? 'cursor-pointer overflow-hidden' : ''
+      }`}
+      onClick={() => isBlurred && openUpgradeModal('blurred_hooks')}
     >
-      <div className="space-y-4">
+      <div className={`space-y-4 ${isBlurred ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
             <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1 ${
@@ -402,6 +433,25 @@ function HookCard({ hook, idx, onCopy, onToggleSave }: { hook: HookResult, idx: 
           <Copy className="w-3.5 h-3.5" /> Copy
         </button>
       </div>
+
+      </div>
+      
+      {isBlurred && (
+        <div className="absolute inset-0 bg-white/10 dark:bg-slate-900/10 flex flex-col items-center justify-center p-6 text-center space-y-3 z-10 backdrop-blur-[2px]">
+          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+            <Zap className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-primary">Premium Hook</p>
+            <p className="text-[10px] text-slate-500 font-medium">Upgrade to Starter to unlock all 10 viral hooks</p>
+          </div>
+          <button 
+            className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-primary text-white shadow-lg shadow-primary/20"
+          >
+            Unlock Now
+          </button>
+        </div>
+      )}
 
       <button className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
         <MoreVertical className="w-4 h-4" />

@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 
 import { supabase } from './lib/supabase';
 import { useAuthStore } from './store/authStore';
+import UpgradeModal from './components/modals/UpgradeModal';
 
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -102,6 +103,7 @@ function App() {
         </Routes>
       </Router>
       <Toaster position="bottom-right" />
+      <UpgradeModal />
     </QueryClientProvider>
   );
 }
