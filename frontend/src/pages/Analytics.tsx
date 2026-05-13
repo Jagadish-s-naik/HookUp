@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BarChart3, 
@@ -42,20 +42,19 @@ interface DailyData {
 
 const COLORS = ['#7C3AED', '#EC4899', '#3B82F6', '#10B981', '#F59E0B'];
 
+interface PlatformDistribution {
+  name: string;
+  value: number;
+}
+
 export default function Analytics() {
   const { user } = useAuthStore();
   const [stats, setStats] = useState<AnalyticsData | null>(null);
   const [dailyData, setDailyData] = useState<DailyData[]>([]);
-  const [platformData, setPlatformData] = useState<any[]>([]);
-  const [loading, _setLoading] = useState(true);
+  const [platformData, setPlatformData] = useState<PlatformDistribution[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      fetchAnalytics();
-    }
-  }, [user]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     try {
       // Fetch summary from view
@@ -91,7 +90,7 @@ export default function Analytics() {
 
       if (hooksError) throw hooksError;
 
-      const platformCounts = hooks?.reduce((acc: any, h: any) => {
+      const platformCounts = hooks?.reduce((acc: Record<string, number>, h: { platform: string }) => {
         acc[h.platform] = (acc[h.platform] || 0) + 1;
         return acc;
       }, {});
@@ -108,7 +107,13 @@ export default function Analytics() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchAnalytics();
+    }
+  }, [user, fetchAnalytics]);
 
   const metrics = [
     { 
