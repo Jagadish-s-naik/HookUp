@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
-  Target, 
   Share2, 
   TrendingUp, 
   Cpu, 
@@ -74,7 +73,7 @@ export default function Onboarding() {
 
       toast.success('Onboarding complete! Welcome aboard.');
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Onboarding error:', error);
       toast.error('Failed to save your preferences. Please try again.');
     } finally {
