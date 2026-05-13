@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -36,21 +36,14 @@ interface Hook {
   hook_style?: string;
 }
 
-const platforms = [
-  { id: 'all', label: 'All Platforms' },
-  { id: 'instagram', label: 'Instagram' },
-  { id: 'tiktok', label: 'TikTok' },
-  { id: 'youtube', label: 'YouTube' },
-  { id: 'linkedin', label: 'LinkedIn' },
-  { id: 'twitter', label: 'X / Twitter' },
-];
+
 
 export default function Library() {
   const [hooks, setHooks] = useState<Hook[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [selectedPlatform, setSelectedPlatform] = useState('all');
+  const [selectedPlatform] = useState('all');
   const [selectedTone, setSelectedTone] = useState('all');
   const [minScore, setMinScore] = useState(0);
   const [sortBy, setSortBy] = useState('newest');
@@ -64,9 +57,9 @@ export default function Library() {
 
   useEffect(() => {
     fetchHooks();
-  }, [selectedPlatform, selectedTone, minScore, sortBy]);
+  }, [fetchHooks]);
 
-  const fetchHooks = async () => {
+  const fetchHooks = useCallback(async () => {
     setLoading(true);
     try {
       let query = supabase
@@ -94,15 +87,16 @@ export default function Library() {
         query = query.order('user_rating', { ascending: false, nullsFirst: false });
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
+      const { data, error: fetchError } = await query;
+      if (fetchError) throw fetchError;
       setHooks(data || []);
     } catch (error) {
+      console.error('Error fetching hooks:', error);
       toast.error('Failed to load library');
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPlatform, selectedTone, minScore, sortBy]);
 
   const removeHook = async (id: string) => {
     try {
@@ -115,6 +109,7 @@ export default function Library() {
       setHooks(hooks.filter(h => h.id !== id));
       toast.success('Removed from library');
     } catch (error) {
+      console.error('Error removing hook:', error);
       toast.error('Failed to remove hook');
     }
   };
@@ -252,7 +247,7 @@ export default function Library() {
       ) : filteredHooks.length > 0 ? (
         <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
           <AnimatePresence mode="popLayout">
-            {filteredHooks.map((hook, idx) => (
+            {filteredHooks.map((hook) => (
               <LibraryHookCard 
                 key={hook.id} 
                 hook={hook} 
