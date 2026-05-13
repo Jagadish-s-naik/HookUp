@@ -12,15 +12,11 @@ import {
   PieChart as PieChartIcon
 } from 'lucide-react';
 import { 
-  BarChart, 
-  Bar, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -51,7 +47,7 @@ export default function Analytics() {
   const [stats, setStats] = useState<AnalyticsData | null>(null);
   const [dailyData, setDailyData] = useState<DailyData[]>([]);
   const [platformData, setPlatformData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, _setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
@@ -248,7 +244,7 @@ export default function Analytics() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {platformData.map((entry, index) => (
+                    {platformData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
