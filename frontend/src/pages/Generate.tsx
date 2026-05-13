@@ -9,7 +9,6 @@ import {
   RefreshCcw, 
   Copy, 
   Heart,
-  Send,
   MoreVertical,
   Target,
   Languages,
@@ -78,7 +77,7 @@ interface HookResult {
 
 export default function Generate() {
   const { profile } = useAuthStore();
-  const { isFree, canGenerate, remainingToday, plan } = usePlan();
+  const { isFree, canGenerate } = usePlan();
   const { openUpgradeModal } = useUIStore();
   
   const [platform, setPlatform] = useState('instagram');
