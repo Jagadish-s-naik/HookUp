@@ -1,11 +1,11 @@
-import { Bell, Search, User, Zap } from 'lucide-react';
+import { Bell, Search, Zap } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { usePlan } from '../../hooks/usePlan';
 import { useUIStore } from '../../store/uiStore';
 
 export default function TopBar() {
   const { profile, user } = useAuthStore();
-  const { plan, usage, limits, remainingToday, isFree } = usePlan();
+  const { plan, usage, limits, isFree } = usePlan();
   const { openUpgradeModal } = useUIStore();
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
