@@ -55,10 +55,6 @@ export default function Library() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  useEffect(() => {
-    fetchHooks();
-  }, [fetchHooks]);
-
   const fetchHooks = useCallback(async () => {
     setLoading(true);
     try {
@@ -97,6 +93,10 @@ export default function Library() {
       setLoading(false);
     }
   }, [selectedPlatform, selectedTone, minScore, sortBy]);
+
+  useEffect(() => {
+    fetchHooks();
+  }, [fetchHooks]);
 
   const removeHook = async (id: string) => {
     try {
