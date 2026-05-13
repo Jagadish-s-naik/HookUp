@@ -391,6 +391,7 @@ function HookCard({
   idx, 
   onCopy, 
   onToggleSave,
+  onRate,
   isBlurred 
 }: { 
   hook: HookResult, 
