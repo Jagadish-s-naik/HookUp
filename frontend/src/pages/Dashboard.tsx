@@ -8,9 +8,10 @@ import {
   ChevronRight, 
   Plus,
   BarChart3,
-  Flame,
+  ChevronRight, 
+  Plus,
+  BarChart3,
   ArrowUpRight,
-  Loader2,
   Copy
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
