@@ -18,6 +18,8 @@ import Library from './pages/Library';
 import Analytics from './pages/Analytics';
 import Account from './pages/Account';
 import Onboarding from './pages/Onboarding';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailed from './pages/PaymentFailed';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -97,6 +99,9 @@ function App() {
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/account" element={<Account />} />
               
+              <Route path="/payment/success" element={<PaymentSuccess />} />
+              <Route path="/payment/failed" element={<PaymentFailed />} />
+
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
           </Route>

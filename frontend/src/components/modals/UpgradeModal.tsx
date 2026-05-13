@@ -116,9 +116,9 @@ export default function UpgradeModal() {
           color: '#7C3AED', // primary color
         },
         handler: async (response: any) => {
-          toast.success("Payment successful! Your plan will be updated shortly.");
+          toast.success("Payment successful!");
           closeUpgradeModal();
-          // The webhook will handle the plan update, but we can also refresh the profile here
+          window.location.href = '/payment/success';
         },
         modal: {
           ondismiss: () => {
