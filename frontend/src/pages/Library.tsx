@@ -13,7 +13,10 @@ import {
   Sparkles,
   Share2,
   Calendar,
-  ChevronDown
+  ChevronDown,
+  ThumbsUp,
+  ThumbsDown,
+  AlertCircle
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
@@ -30,6 +33,9 @@ interface Hook {
   platform_fit: string[];
   created_at: string;
   is_saved: boolean;
+  user_rating: number | null;
+  tone?: string;
+  hook_style?: string;
 }
 
 const platforms = [
@@ -45,13 +51,22 @@ export default function Library() {
   const [hooks, setHooks] = useState<Hook[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('all');
+  const [selectedTone, setSelectedTone] = useState('all');
+  const [minScore, setMinScore] = useState(0);
   const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     fetchHooks();
-  }, [selectedPlatform, sortBy]);
+  }, [selectedPlatform, selectedTone, minScore, sortBy]);
 
   const fetchHooks = async () => {
     setLoading(true);
@@ -65,10 +80,20 @@ export default function Library() {
         query = query.eq('platform', selectedPlatform);
       }
 
+      if (selectedTone !== 'all') {
+        query = query.eq('tone', selectedTone);
+      }
+
+      if (minScore > 0) {
+        query = query.gte('viral_score', minScore);
+      }
+
       if (sortBy === 'newest') {
         query = query.order('created_at', { ascending: false });
       } else if (sortBy === 'score') {
         query = query.order('viral_score', { ascending: false });
+      } else if (sortBy === 'rating') {
+        query = query.order('user_rating', { ascending: false, nullsFirst: false });
       }
 
       const { data, error } = await query;
@@ -102,7 +127,7 @@ export default function Library() {
   };
 
   const filteredHooks = hooks.filter(h => 
-    h.hook_text.toLowerCase().includes(searchQuery.toLowerCase())
+    h.hook_text.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   return (
@@ -154,15 +179,33 @@ export default function Library() {
           />
         </div>
         
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative w-full md:w-48">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div className="relative w-full md:w-40">
             <select 
-              className="w-full pl-10 pr-8 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary/20 text-sm appearance-none"
-              value={selectedPlatform}
-              onChange={(e) => setSelectedPlatform(e.target.value)}
+              className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary/20 text-sm appearance-none"
+              value={selectedTone}
+              onChange={(e) => setSelectedTone(e.target.value)}
             >
-              {platforms.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
+              <option value="all">All Tones</option>
+              <option value="educational">Educational</option>
+              <option value="entertaining">Entertaining</option>
+              <option value="controversial">Controversial</option>
+              <option value="inspirational">Inspirational</option>
+              <option value="curiosity">Curiosity</option>
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
+
+          <div className="relative w-full md:w-40">
+            <select 
+              className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary/20 text-sm appearance-none"
+              value={minScore}
+              onChange={(e) => setMinScore(Number(e.target.value))}
+            >
+              <option value="0">Any Score</option>
+              <option value="7">Score 7+</option>
+              <option value="8">Score 8+</option>
+              <option value="9">Score 9+</option>
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
@@ -175,11 +218,32 @@ export default function Library() {
             >
               <option value="newest">Newest First</option>
               <option value="score">Highest Score</option>
+              <option value="rating">Highest Rated</option>
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
         </div>
       </div>
+
+      {deletingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 dark:border-slate-800"
+          >
+            <div className="flex items-center gap-3 text-rose-500 mb-4">
+              <AlertCircle className="w-6 h-6" />
+              <h3 className="text-lg font-bold">Remove Hook?</h3>
+            </div>
+            <p className="text-slate-500 text-sm mb-6">This will remove the hook from your library. You can always generate it again later.</p>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" className="flex-1" onClick={() => setDeletingId(null)}>Cancel</Button>
+              <Button className="flex-1 bg-rose-500 hover:bg-rose-600 text-white border-none" onClick={() => { removeHook(deletingId); setDeletingId(null); }}>Remove</Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -195,7 +259,7 @@ export default function Library() {
                 key={hook.id} 
                 hook={hook} 
                 viewMode={viewMode}
-                onRemove={() => removeHook(hook.id)}
+                onRemove={() => setDeletingId(hook.id)}
                 onCopy={() => copyToClipboard(hook.hook_text)}
               />
             ))}
@@ -246,11 +310,10 @@ function LibraryHookCard({
           <p className="text-sm text-slate-800 dark:text-slate-200 font-medium truncate italic">"{hook.hook_text}"</p>
           <div className="flex items-center gap-3 mt-1">
             <span className="text-[10px] text-slate-400 flex items-center gap-1">
-              <Share2 className="w-3 h-3" /> {hook.platform}
-            </span>
-            <span className="text-[10px] text-slate-400 flex items-center gap-1">
               <Calendar className="w-3 h-3" /> {new Date(hook.created_at).toLocaleDateString()}
             </span>
+            {hook.user_rating === 1 && <ThumbsUp className="w-3 h-3 text-emerald-500" />}
+            {hook.user_rating === -1 && <ThumbsDown className="w-3 h-3 text-rose-500" />}
           </div>
         </div>
         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -282,6 +345,11 @@ function LibraryHookCard({
             Score: {hook.viral_score}/10
           </div>
           <div className="flex items-center gap-1">
+            {hook.user_rating === 1 && (
+              <div className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-[10px] font-bold">
+                <ThumbsUp className="w-3 h-3" />
+              </div>
+            )}
             <div className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">
               <Share2 className="w-3 h-3" /> {hook.platform}
             </div>

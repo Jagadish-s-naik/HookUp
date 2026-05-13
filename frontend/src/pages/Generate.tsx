@@ -15,7 +15,9 @@ import {
   Languages,
   Wand2,
   TrendingUp,
-  BrainCircuit
+  BrainCircuit,
+  ThumbsUp,
+  ThumbsDown
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
@@ -71,6 +73,7 @@ interface HookResult {
   psychological_trigger: string;
   platform_fit: string[];
   is_saved: boolean;
+  user_rating: number | null;
 }
 
 export default function Generate() {
@@ -158,6 +161,30 @@ export default function Generate() {
       toast.success(!currentStatus ? 'Saved to library' : 'Removed from library');
     } catch (error) {
       toast.error('Failed to update save status');
+    }
+  };
+
+  const handleRate = async (id: string, rating: number) => {
+    try {
+      const currentHook = generatedHooks.find(h => h.id === id);
+      const newRating = currentHook?.user_rating === rating ? null : rating;
+
+      const { error } = await supabase
+        .from('hooks')
+        .update({ user_rating: newRating })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setGeneratedHooks(prev => prev.map(h => 
+        h.id === id ? { ...h, user_rating: newRating } : h
+      ));
+
+      if (newRating !== null) {
+        toast.success(newRating === 1 ? 'Glad you liked it!' : 'Feedback received');
+      }
+    } catch (error) {
+      toast.error('Failed to save rating');
     }
   };
 
@@ -334,6 +361,7 @@ export default function Generate() {
                       isBlurred={isBlurred}
                       onCopy={() => isBlurred ? openUpgradeModal('blurred_hooks') : copyToClipboard(hook.hook_text)} 
                       onToggleSave={() => isBlurred ? openUpgradeModal('blurred_hooks') : toggleSave(hook.id, hook.is_saved)}
+                      onRate={(rating) => isBlurred ? openUpgradeModal('blurred_hooks') : handleRate(hook.id, rating)}
                     />
                   );
                 })
@@ -369,6 +397,7 @@ function HookCard({
   idx: number, 
   onCopy: () => void, 
   onToggleSave: () => void,
+  onRate: (rating: number) => void,
   isBlurred?: boolean
 }) {
   const { openUpgradeModal } = useUIStore();
@@ -422,12 +451,31 @@ function HookCard({
           >
             <Heart className={`w-4 h-4 ${hook.is_saved ? 'fill-current' : ''}`} />
           </button>
-          <button className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all">
-            <Send className="w-4 h-4" />
-          </button>
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 ml-1">
+            <button 
+              onClick={(e) => { e.stopPropagation(); onRate(1); }}
+              className={`p-1.5 rounded-md transition-all ${
+                hook.user_rating === 1 
+                  ? 'bg-white dark:bg-slate-700 text-emerald-500 shadow-sm' 
+                  : 'text-slate-400 hover:text-slate-600'
+              }`}
+            >
+              <ThumbsUp className="w-3.5 h-3.5" />
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); onRate(-1); }}
+              className={`p-1.5 rounded-md transition-all ${
+                hook.user_rating === -1 
+                  ? 'bg-white dark:bg-slate-700 text-rose-500 shadow-sm' 
+                  : 'text-slate-400 hover:text-slate-600'
+              }`}
+            >
+              <ThumbsDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
         <button 
-          onClick={onCopy}
+          onClick={(e) => { e.stopPropagation(); onCopy(); }}
           className="flex-1 flex items-center justify-center gap-2 text-xs font-bold text-white bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 py-2.5 rounded-xl transition-all shadow-lg shadow-primary/10"
         >
           <Copy className="w-3.5 h-3.5" /> Copy
