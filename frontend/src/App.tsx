@@ -34,7 +34,7 @@ function App() {
     const fetchProfile = async (userId: string) => {
       try {
         const { data, error } = await supabase
-          .from('profiles')
+          .from('users')
           .select('*')
           .eq('id', userId)
           .single();

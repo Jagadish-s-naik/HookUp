@@ -3,12 +3,16 @@ import { User } from '@supabase/supabase-js';
 
 export interface UserProfile {
   id: string;
+  email: string;
+  name: string | null;
+  avatar_url: string | null;
   niche: string | null;
   platforms: string[] | null;
   goal: string | null;
-  has_onboarded: boolean;
-  avatar_url?: string;
-  full_name?: string;
+  plan: 'free' | 'starter' | 'pro' | 'agency';
+  onboarding_complete: boolean;
+  hooks_used_today: number;
+  brand_voice_summary: string | null;
 }
 
 interface AuthState {

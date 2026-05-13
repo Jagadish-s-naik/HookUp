@@ -61,15 +61,14 @@ export default function Onboarding() {
     try {
       // Update profile in Supabase
       const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
+        .from('users')
+        .update({
           niche: data.niche,
           platforms: data.platforms,
           goal: data.goal,
-          has_onboarded: true,
-          updated_at: new Date().toISOString(),
-        });
+          onboarding_complete: true,
+        })
+        .eq('id', user.id);
 
       if (error) throw error;
 

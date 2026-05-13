@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS public.users (
   avatar_url                text,
   niche                     text,
   platforms                 text[] DEFAULT '{}',
+  goal                      text,
   brand_voice_samples       text[] DEFAULT '{}',
   brand_voice_summary       text,
   plan                      text NOT NULL DEFAULT 'free'
