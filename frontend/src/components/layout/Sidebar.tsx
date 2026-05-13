@@ -26,8 +26,9 @@ export default function Sidebar() {
       storeSignOut();
       toast.success('Logged out successfully');
       navigate('/login');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to logout');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to logout';
+      toast.error(message);
     }
   };
 
