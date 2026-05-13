@@ -34,7 +34,7 @@ export default function Signup() {
 
       toast.success('Account created! Please check your email for confirmation.');
       navigate('/login');
-    } catch (error: any) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to sign up';
       toast.error(message);
     } finally {
