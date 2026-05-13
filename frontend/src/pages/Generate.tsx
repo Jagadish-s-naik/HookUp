@@ -482,7 +482,7 @@ function HookCard({
         </button>
       </div>
 
-      </div>
+
       
       {isBlurred && (
         <div className="absolute inset-0 bg-white/10 dark:bg-slate-900/10 flex flex-col items-center justify-center p-6 text-center space-y-3 z-10 backdrop-blur-[2px]">
