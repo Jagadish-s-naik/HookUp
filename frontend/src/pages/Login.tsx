@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Mail, Lock, Github } from 'lucide-react';
+import { Sparkles, Github } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -26,8 +26,9 @@ export default function Login() {
 
       toast.success('Welcome back!');
       navigate('/dashboard');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to login');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to login';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -42,8 +43,9 @@ export default function Login() {
         },
       });
       if (error) throw error;
-    } catch (error: any) {
-      toast.error(error.message || 'Google login failed');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Google login failed';
+      toast.error(message);
     }
   };
 
@@ -85,7 +87,7 @@ export default function Login() {
               required
             />
             <div className="flex justify-end">
-              <Link to="/forgot-password" size="sm" className="text-xs text-primary hover:underline">
+              <Link to="/forgot-password" title="Forgot password" className="text-xs text-primary hover:underline">
                 Forgot password?
               </Link>
             </div>
