@@ -62,7 +62,7 @@ const plans = [
 
 export default function UpgradeModal() {
   const { isUpgradeModalOpen, upgradeReason, closeUpgradeModal } = useUIStore();
-  const { user, profile } = useAuthStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
@@ -117,7 +117,7 @@ export default function UpgradeModal() {
         theme: {
           color: '#7C3AED', // primary color
         },
-        handler: async (response: any) => {
+        handler: async (_response: any) => {
           toast.success("Payment successful!");
           closeUpgradeModal();
           navigate('/payment/success');
@@ -219,7 +219,7 @@ export default function UpgradeModal() {
                   <Button 
                     variant={plan.buttonVariant}
                     disabled={plan.disabled || loadingPlan === plan.name}
-                    loading={loadingPlan === plan.name}
+                    isLoading={loadingPlan === plan.name}
                     className="w-full font-bold h-12"
                     onClick={() => handleUpgrade(plan.name)}
                   >
