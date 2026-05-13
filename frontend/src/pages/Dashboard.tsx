@@ -8,9 +8,6 @@ import {
   ChevronRight, 
   Plus,
   BarChart3,
-  ChevronRight, 
-  Plus,
-  BarChart3,
   ArrowUpRight,
   Copy
 } from 'lucide-react';
