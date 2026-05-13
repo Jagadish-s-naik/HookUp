@@ -1,7 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
+import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../lib/supabase';
+import { loadRazorpayScript, openRazorpayCheckout } from '../../lib/razorpay';
 import Button from '../ui/Button';
+import toast from 'react-hot-toast';
+import { useState, useEffect } from 'react';
 
 const plans = [
   {
@@ -56,6 +61,79 @@ const plans = [
 
 export default function UpgradeModal() {
   const { isUpgradeModalOpen, upgradeReason, closeUpgradeModal } = useUIStore();
+  const { user, profile } = useAuthStore();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isUpgradeModalOpen) {
+      loadRazorpayScript().then((success) => {
+        if (!success) {
+          toast.error("Failed to load payment gateway. Please check your connection.");
+        }
+      });
+    }
+  }, [isUpgradeModalOpen]);
+
+  const handleUpgrade = async (plan: string) => {
+    if (!user) {
+      toast.error("Please login to upgrade");
+      return;
+    }
+
+    setLoadingPlan(plan);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/razorpay-checkout`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.session?.access_token}`,
+          },
+          body: JSON.stringify({
+            plan: plan.toLowerCase(),
+            billing_cycle: 'monthly', // Default to monthly for now
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to initialize checkout');
+      }
+
+      const options = {
+        key: data.razorpay_key_id,
+        subscription_id: data.subscription_id,
+        name: 'HookAI',
+        description: `${plan} Subscription`,
+        image: '/logo.png', // Add your logo path
+        prefill: data.prefill,
+        theme: {
+          color: '#7C3AED', // primary color
+        },
+        handler: async (response: any) => {
+          toast.success("Payment successful! Your plan will be updated shortly.");
+          closeUpgradeModal();
+          // The webhook will handle the plan update, but we can also refresh the profile here
+        },
+        modal: {
+          ondismiss: () => {
+            setLoadingPlan(null);
+          },
+        },
+      };
+
+      openRazorpayCheckout(options);
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      toast.error(error.message || "Something went wrong. Please try again.");
+      setLoadingPlan(null);
+    }
+  };
 
   if (!isUpgradeModalOpen) return null;
 
@@ -138,8 +216,10 @@ export default function UpgradeModal() {
 
                   <Button 
                     variant={plan.buttonVariant}
-                    disabled={plan.disabled}
+                    disabled={plan.disabled || loadingPlan === plan.name}
+                    loading={loadingPlan === plan.name}
                     className="w-full font-bold h-12"
+                    onClick={() => handleUpgrade(plan.name)}
                   >
                     {plan.buttonText}
                   </Button>
