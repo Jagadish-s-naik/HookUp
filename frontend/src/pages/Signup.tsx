@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Sparkles, Mail, Lock, Github, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
@@ -11,6 +11,8 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get('ref');
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +24,9 @@ export default function Signup() {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/onboarding`,
+          data: {
+            referred_by: refCode
+          }
         },
       });
 

@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Sparkles, Library, BarChart3, User, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Sparkles, Library, BarChart3, User, Settings, LogOut, Gift } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
@@ -9,6 +9,7 @@ const menuItems = [
   { icon: Sparkles, label: 'Generate', path: '/generate' },
   { icon: Library, label: 'Library', path: '/library' },
   { icon: BarChart3, label: 'Analytics', path: '/analytics' },
+  { icon: Gift, label: 'Affiliate', path: '/affiliate' },
   { icon: User, label: 'Account', path: '/account' },
 ];
 

@@ -51,8 +51,12 @@ CREATE TABLE IF NOT EXISTS public.users (
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO public.users (id, email)
-  VALUES (new.id, new.email);
+  INSERT INTO public.users (id, email, referred_by)
+  VALUES (
+    new.id, 
+    new.email,
+    (new.raw_user_meta_data->>'referred_by')::text
+  );
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

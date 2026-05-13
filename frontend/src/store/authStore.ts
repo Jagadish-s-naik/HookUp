@@ -13,6 +13,8 @@ export interface UserProfile {
   onboarding_complete: boolean;
   hooks_used_today: number;
   brand_voice_summary: string | null;
+  referral_code: string | null;
+  affiliate_earnings: number;
 }
 
 interface AuthState {
