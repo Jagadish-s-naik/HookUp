@@ -2,20 +2,18 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
-  Filter, 
   Trash2, 
   Copy, 
-  ExternalLink,
-  TrendingUp,
-  BrainCircuit,
-  LayoutGrid,
-  List,
-  Sparkles,
-  Share2,
-  Calendar,
-  ChevronDown,
-  ThumbsUp,
-  ThumbsDown,
+  TrendingUp, 
+  BrainCircuit, 
+  LayoutGrid, 
+  List, 
+  Sparkles, 
+  Share2, 
+  Calendar, 
+  ChevronDown, 
+  ThumbsUp, 
+  ThumbsDown, 
   AlertCircle
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
