@@ -131,9 +131,10 @@ export default function Generate() {
       
       setGeneratedHooks(data.hooks);
       toast.success('10 viral hooks ready!');
-    } catch (error: any) {
-      console.error('Generation failed:', error);
-      toast.error(error.message || 'Failed to generate hooks');
+    } catch (err) {
+      console.error('Generation failed:', err);
+      const message = err instanceof Error ? err.message : 'Failed to generate hooks';
+      toast.error(message);
     } finally {
       setIsGenerating(false);
     }
@@ -158,7 +159,8 @@ export default function Generate() {
       ));
 
       toast.success(!currentStatus ? 'Saved to library' : 'Removed from library');
-    } catch (error) {
+    } catch (err) {
+      console.error('Save status update failed:', err);
       toast.error('Failed to update save status');
     }
   };
@@ -182,7 +184,8 @@ export default function Generate() {
       if (newRating !== null) {
         toast.success(newRating === 1 ? 'Glad you liked it!' : 'Feedback received');
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Rating update failed:', err);
       toast.error('Failed to save rating');
     }
   };
