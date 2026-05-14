@@ -39,7 +39,7 @@ export default function Landing() {
       if (error) throw error;
       
       setDemoResult(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Demo generation failed:', err);
       // Fallback for demo if API fails
       setDemoResult({

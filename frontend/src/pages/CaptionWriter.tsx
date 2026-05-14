@@ -28,13 +28,17 @@ const PLATFORMS = [
 
 const TONES = ['Professional', 'Humorous', 'Contrarian', 'Educational', 'Emotional', 'Urgent'];
 
+interface GeneratedCaption {
+  caption_text: string;
+  hashtags: string[];
+}
+
 export default function CaptionWriter() {
-  const { user } = useAuthStore();
   const [topic, setTopic] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('instagram');
   const [selectedTone, setSelectedTone] = useState('Professional');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedCaption, setGeneratedCaption] = useState<any>(null);
+  const [generatedCaption, setGeneratedCaption] = useState<GeneratedCaption | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
@@ -57,9 +61,10 @@ export default function CaptionWriter() {
       if (error) throw error;
       setGeneratedCaption(data);
       toast.success('Caption generated successfully!');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error(err.message || 'Failed to generate caption');
+      const message = err instanceof Error ? err.message : 'Failed to generate caption';
+      toast.error(message);
     } finally {
       setIsGenerating(false);
     }
