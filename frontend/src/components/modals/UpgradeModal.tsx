@@ -2,22 +2,72 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
 import { useCheckout } from '../../hooks/useCheckout';
+import Button from '../ui/Button';
 
-// ... inside component
-  const { startCheckout, isLoading: isCheckoutLoading } = useCheckout();
+const plans = [
+  {
+    name: 'Free',
+    price: '₹0',
+    description: 'Perfect for getting started',
+    features: [
+      '5 hooks per day',
+      '1 platform at a time',
+      'Basic analytics',
+      'Standard AI model'
+    ],
+    buttonText: 'Current Plan',
+    buttonVariant: 'outline' as const,
+    disabled: true,
+  },
+  {
+    name: 'Starter',
+    price: '₹499',
+    period: '/month',
+    description: 'For growing creators',
+    features: [
+      '100 hooks per month',
+      '3 platforms at a time',
+      'Advanced analytics',
+      '7-day content calendar',
+      'Priority support'
+    ],
+    buttonText: 'Upgrade to Starter',
+    buttonVariant: 'primary' as const,
+    popular: true,
+    icon: Zap,
+  },
+  {
+    name: 'Pro',
+    price: '₹1,299',
+    period: '/month',
+    description: 'For serious influencers',
+    features: [
+      'Unlimited hooks',
+      'All platforms',
+      'Full 30-day calendar',
+      'Brand Voice AI',
+      'Repurpose Engine',
+      'Early access features'
+    ],
+    buttonText: 'Upgrade to Pro',
+    buttonVariant: 'primary' as const,
+    icon: Rocket,
+  }
+];
+
+export default function UpgradeModal() {
+  const { isUpgradeModalOpen, upgradeReason, closeUpgradeModal } = useUIStore();
+  const { startCheckout, isLoading } = useCheckout();
 
   const handleUpgrade = async (plan: string) => {
     try {
       await startCheckout(plan);
       closeUpgradeModal();
     } catch (error) {
-      // Error is already handled in the hook's toast
+      // Error handled in hook
     }
   };
-
 
   if (!isUpgradeModalOpen) return null;
 
@@ -38,7 +88,6 @@ import { useCheckout } from '../../hooks/useCheckout';
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           className="relative w-full max-w-5xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
         >
-          {/* Close Button */}
           <button 
             onClick={closeUpgradeModal}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors z-10"
@@ -100,8 +149,8 @@ import { useCheckout } from '../../hooks/useCheckout';
 
                   <Button 
                     variant={plan.buttonVariant}
-                    disabled={plan.disabled || loadingPlan === plan.name}
-                    isLoading={loadingPlan === plan.name}
+                    disabled={plan.disabled || isLoading}
+                    isLoading={isLoading}
                     className="w-full font-bold h-12"
                     onClick={() => handleUpgrade(plan.name)}
                   >
