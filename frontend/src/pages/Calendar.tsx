@@ -51,19 +51,21 @@ export default function Calendar() {
         animate={{ opacity: 1, y: 0 }}
         className="glass rounded-[32px] border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-none"
       >
-        <ContentCalendar onAddEntry={handleAddEntry} />
+        <ContentCalendar 
+          onAddEntry={handleAddEntry} 
+          onEditEntry={handleEditEntry}
+        />
       </motion.div>
 
       <ScheduleModal 
         isOpen={isModalOpen} 
         onClose={() => {
           setIsModalOpen(false);
-          setSelectedDateForModal(undefined);
+          setEditingEntry(undefined);
         }} 
         selectedDate={selectedDateForModal}
+        editingEntry={editingEntry}
       />
     </div>
   );
-}
-
 
