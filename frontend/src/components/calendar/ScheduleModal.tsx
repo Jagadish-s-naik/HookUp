@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar as CalendarIcon, Instagram, Youtube, Twitter, Share2, Loader2 } from 'lucide-react';
-import { useCalendarStore } from '../../store/calendarStore';
+import { useCalendarStore, ScheduledPost } from '../../store/calendarStore';
 import { useAuthStore } from '../../store/authStore';
 import Button from '../ui/Button';
 
@@ -12,6 +12,7 @@ interface ScheduleModalProps {
   initialTitle?: string;
   initialContent?: string;
   initialPlatform?: string;
+  editingEntry?: ScheduledPost;
 }
 
 const PLATFORMS = [
