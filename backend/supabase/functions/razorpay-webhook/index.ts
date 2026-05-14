@@ -109,6 +109,61 @@ serve(async (req) => {
           type: 'premium_unlock',
           message: `Welcome to the ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan! Your premium features are now unlocked.`,
         });
+
+        // Affiliate/Referral Logic
+        try {
+          // 1. Get the user's referral info
+          const { data: userData } = await supabaseClient
+            .from('users')
+            .select('referred_by')
+            .eq('id', userId)
+            .single();
+
+          if (userData?.referred_by) {
+            // 2. Find the referrer by their code
+            const { data: referrer } = await supabaseClient
+              .from('users')
+              .select('id, name')
+              .eq('referral_code', userData.referred_by)
+              .single();
+
+            if (referrer) {
+              const commissionRate = 0.30; // 30% commission
+              const amountInInr = (payment?.amount || subscription?.amount || 0) / 100;
+              const commission = amountInInr * commissionRate;
+
+              if (commission > 0) {
+                // 3. Update or Insert referral record
+                const { error: refError } = await supabaseClient
+                  .from('referrals')
+                  .upsert({
+                    referrer_id: referrer.id,
+                    referred_id: userId,
+                    converted_at: new Date().toISOString(),
+                    commission_amount: commission
+                  }, { onConflict: 'referred_id' });
+
+                if (!refError) {
+                  // 4. Increment referrer's earnings
+                  await supabaseClient.rpc('increment_affiliate_earnings', {
+                    user_id: referrer.id,
+                    amount: commission
+                  });
+
+                  // 5. Notify referrer
+                  await supabaseClient.from('notifications').insert({
+                    user_id: referrer.id,
+                    type: 'alert',
+                    message: `You earned ₹${commission.toFixed(2)} commission! Someone you referred just upgraded their plan.`,
+                  });
+                }
+              }
+            }
+          }
+        } catch (affError) {
+          console.error('Affiliate Logic Error:', affError);
+          // Don't fail the whole webhook if affiliate logic fails
+        }
         break;
 
       case 'subscription.cancelled':
