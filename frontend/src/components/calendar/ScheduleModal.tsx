@@ -26,10 +26,11 @@ const PLATFORMS = [
 
 interface ContentProps extends ScheduleModalProps {
   user: User | null;
-  addEntry: (entry: Omit<ScheduledPost, 'id' | 'created_at' | 'status'>) => Promise<void>;
+  addEntry: (entry: Omit<ScheduledPost, 'id' | 'created_at'>) => Promise<void>;
   updateEntry: (id: string, entry: Partial<ScheduledPost>) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
 }
+
 
 function ScheduleModalContent({ 
   onClose, 
@@ -53,9 +54,11 @@ function ScheduleModalContent({
     title: editingEntry?.title || initialTitle,
     content: editingEntry?.content || initialContent || '',
     platform: editingEntry?.platform || initialPlatform,
+    status: editingEntry?.status || 'pending',
     date: scheduledDate ? scheduledDate.toISOString().split('T')[0] : (selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]),
     time: scheduledDate ? scheduledDate.toTimeString().split(' ')[0].substring(0, 5) : '12:00'
   });
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +73,7 @@ function ScheduleModalContent({
           title: formData.title,
           content: formData.content,
           platform: formData.platform,
+          status: formData.status as any,
           scheduled_at: scheduledAt
         });
       } else {
@@ -78,9 +82,11 @@ function ScheduleModalContent({
           title: formData.title,
           content: formData.content,
           platform: formData.platform,
+          status: formData.status as any,
           scheduled_at: scheduledAt
         });
       }
+
       
       onClose();
     } catch (error) {
@@ -161,6 +167,28 @@ function ScheduleModalContent({
           />
         </div>
 
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Status</label>
+          <div className="flex gap-2">
+            {(['draft', 'pending', 'approved'] as const).map((status) => (
+              <button
+                key={status}
+                type="button"
+                onClick={() => setFormData({ ...formData, status })}
+                className={`flex-1 py-2 px-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                  formData.status === status
+                    ? status === 'approved' ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20' :
+                      status === 'pending' ? 'bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-500/20' :
+                      'bg-slate-600 border-slate-600 text-white shadow-lg shadow-slate-600/20'
+                    : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-400 hover:border-slate-300 dark:hover:border-slate-600'
+                }`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date</label>
@@ -183,6 +211,7 @@ function ScheduleModalContent({
             />
           </div>
         </div>
+
 
         <div className="space-y-2">
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Notes / Caption (Optional)</label>
