@@ -12,9 +12,10 @@ import {
   subMonths,
   parseISO
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, Share2, Youtube, Instagram, Twitter, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Share2, Youtube, Instagram, Twitter, Loader2, Trash2 } from 'lucide-react';
 import { useCalendarStore } from '../../store/calendarStore';
 import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../lib/supabase';
 
 const PLATFORM_ICONS: Record<string, any> = {
   instagram: Instagram,
@@ -36,11 +37,28 @@ export default function ContentCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { user } = useAuthStore();
-  const { entries, isLoading, fetchEntries } = useCalendarStore();
+  const { entries, isLoading, fetchEntries, deleteEntry } = useCalendarStore();
 
   useEffect(() => {
     if (user?.id) {
       fetchEntries(user.id);
+
+      // Real-time subscription for calendar changes
+      const channel = supabase
+        .channel(`public:scheduled_posts:${user.id}`)
+        .on('postgres_changes', { 
+          event: '*', 
+          schema: 'public', 
+          table: 'scheduled_posts',
+          filter: `user_id=eq.${user.id}`
+        }, () => {
+          fetchEntries(user.id);
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user?.id, fetchEntries]);
 
@@ -116,7 +134,7 @@ export default function ContentCalendar() {
             <div 
               key={day.toString()}
               onClick={() => setSelectedDate(day)}
-              className={`min-h-[140px] p-2 border-r border-b border-slate-100 dark:border-slate-800 transition-all cursor-pointer group ${
+              className={`min-h-[160px] p-2 border-r border-b border-slate-100 dark:border-slate-800 transition-all cursor-pointer group ${
                 !isCurrentMonth ? 'bg-slate-50/30 dark:bg-slate-900/10' : ''
               } ${isSelected ? 'ring-2 ring-inset ring-primary z-[1]' : ''}`}
             >
@@ -139,14 +157,23 @@ export default function ContentCalendar() {
                   return (
                     <div 
                       key={entry.id}
-                      className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:shadow-md transition-all overflow-hidden"
+                      className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:shadow-md transition-all group/item relative overflow-hidden"
                     >
                       <div className={`w-5 h-5 flex-shrink-0 rounded-md ${PLATFORM_COLORS[entry.platform]} flex items-center justify-center shadow-sm`}>
                         <Icon className="w-3 h-3 text-white" />
                       </div>
-                      <span className="text-[10px] font-bold truncate text-slate-700 dark:text-slate-300">
+                      <span className="text-[10px] font-bold truncate text-slate-700 dark:text-slate-300 pr-4">
                         {entry.title}
                       </span>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteEntry(entry.id);
+                        }}
+                        className="absolute right-1 opacity-0 group-hover/item:opacity-100 p-1 hover:text-red-500 transition-all"
+                      >
+                        <Trash2 className="w-2.5 h-2.5" />
+                      </button>
                     </div>
                   );
                 })}
@@ -166,4 +193,5 @@ function PlusIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
 
