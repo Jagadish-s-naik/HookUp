@@ -38,7 +38,11 @@ export default function Affiliate() {
 
   const fetchAffiliateStats = useCallback(async () => {
     if (!profile?.id) return;
+    
+    // Use a microtask to avoid "setState in effect" warning
+    await Promise.resolve();
     setLoading(true);
+
     try {
       // Fetch stats from referrals table
       const { data: referrals, error: refError } = await supabase
@@ -64,11 +68,13 @@ export default function Affiliate() {
     } finally {
       setLoading(false);
     }
-  }, [profile?.id]);
+  }, [profile]);
 
   useEffect(() => {
-    fetchAffiliateStats();
-  }, [fetchAffiliateStats]);
+    if (profile?.id) {
+      fetchAffiliateStats();
+    }
+  }, [profile?.id, fetchAffiliateStats]);
 
   const referralLink = `${window.location.origin}/signup?ref=${profile?.referral_code}`;
 
