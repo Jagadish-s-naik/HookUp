@@ -22,12 +22,12 @@ export default function ProtectedRoute() {
   }
 
   // If authenticated but not onboarded, and not on the onboarding page, redirect to onboarding
-  if (!profile?.has_onboarded && location.pathname !== '/onboarding') {
+  if (!profile?.onboarding_complete && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
   }
 
   // If already onboarded and trying to access onboarding, redirect to dashboard
-  if (profile?.has_onboarded && location.pathname === '/onboarding') {
+  if (profile?.onboarding_complete && location.pathname === '/onboarding') {
     return <Navigate to="/dashboard" replace />;
   }
 
