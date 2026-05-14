@@ -4,13 +4,22 @@ import { Plus, Filter } from 'lucide-react';
 import Button from '../components/ui/Button';
 import ContentCalendar from '../components/calendar/ContentCalendar';
 import ScheduleModal from '../components/calendar/ScheduleModal';
+import { ScheduledPost } from '../store/calendarStore';
 
 export default function Calendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDateForModal, setSelectedDateForModal] = useState<Date | undefined>(undefined);
+  const [editingEntry, setEditingEntry] = useState<ScheduledPost | undefined>(undefined);
 
   const handleAddEntry = (date?: Date) => {
+    setEditingEntry(undefined);
     setSelectedDateForModal(date);
+    setIsModalOpen(true);
+  };
+
+  const handleEditEntry = (entry: ScheduledPost) => {
+    setEditingEntry(entry);
+    setSelectedDateForModal(undefined);
     setIsModalOpen(true);
   };
 

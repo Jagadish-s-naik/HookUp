@@ -29,10 +29,11 @@ export default function ScheduleModal({
   selectedDate,
   initialTitle = '',
   initialContent = '',
-  initialPlatform = 'instagram'
+  initialPlatform = 'instagram',
+  editingEntry
 }: ScheduleModalProps) {
   const { user } = useAuthStore();
-  const { addEntry } = useCalendarStore();
+  const { addEntry, updateEntry } = useCalendarStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: initialTitle,
@@ -42,18 +43,29 @@ export default function ScheduleModal({
     time: '12:00'
   });
 
-  // Update form data when initial values change (e.g. when modal is opened with new content)
+  // Update form data when initial values or editingEntry change
   useEffect(() => {
     if (isOpen) {
-      setFormData({
-        title: initialTitle,
-        content: initialContent,
-        platform: initialPlatform,
-        date: selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        time: '12:00'
-      });
+      if (editingEntry) {
+        const scheduledDate = new Date(editingEntry.scheduled_at);
+        setFormData({
+          title: editingEntry.title,
+          content: editingEntry.content || '',
+          platform: editingEntry.platform,
+          date: scheduledDate.toISOString().split('T')[0],
+          time: scheduledDate.toTimeString().split(' ')[0].substring(0, 5)
+        });
+      } else {
+        setFormData({
+          title: initialTitle,
+          content: initialContent,
+          platform: initialPlatform,
+          date: selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          time: '12:00'
+        });
+      }
     }
-  }, [isOpen, initialTitle, initialContent, initialPlatform, selectedDate]);
+  }, [isOpen, initialTitle, initialContent, initialPlatform, selectedDate, editingEntry]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,23 +74,27 @@ export default function ScheduleModal({
     setIsSubmitting(true);
     try {
       const scheduledAt = new Date(`${formData.date}T${formData.time}`).toISOString();
-      await addEntry({
-        user_id: user.id,
-        title: formData.title,
-        content: formData.content,
-        platform: formData.platform,
-        scheduled_at: scheduledAt
-      });
+      
+      if (editingEntry) {
+        await updateEntry(editingEntry.id, {
+          title: formData.title,
+          content: formData.content,
+          platform: formData.platform,
+          scheduled_at: scheduledAt
+        });
+      } else {
+        await addEntry({
+          user_id: user.id,
+          title: formData.title,
+          content: formData.content,
+          platform: formData.platform,
+          scheduled_at: scheduledAt
+        });
+      }
+      
       onClose();
-      setFormData({
-        title: '',
-        content: '',
-        platform: 'instagram',
-        date: new Date().toISOString().split('T')[0],
-        time: '12:00'
-      });
     } catch (error) {
-      console.error('Failed to schedule post:', error);
+      console.error('Failed to save post:', error);
     } finally {
       setIsSubmitting(false);
     }
