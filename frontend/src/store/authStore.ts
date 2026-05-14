@@ -29,7 +29,9 @@ interface AuthState {
   setLoading: (isLoading: boolean) => void;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  initializeRealtime: () => () => void;
 }
+
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
@@ -56,4 +58,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ profile: data as UserProfile });
     }
   },
+  initializeRealtime: () => {
+    const { user } = get();
+    if (!user) return () => {};
+
+    const channel = supabase
+      .channel(`profile:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'users',
+          filter: `id=eq.${user.id}`,
+        },
+        (payload) => {
+          set({ profile: payload.new as UserProfile });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  },
 }));
+
