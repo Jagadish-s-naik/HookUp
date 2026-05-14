@@ -33,7 +33,11 @@ const PLATFORM_COLORS: Record<string, string> = {
   linkedin: 'bg-blue-700'
 };
 
-export default function ContentCalendar() {
+interface ContentCalendarProps {
+  onAddEntry?: (date: Date) => void;
+}
+
+export default function ContentCalendar({ onAddEntry }: ContentCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { user } = useAuthStore();
@@ -146,7 +150,13 @@ export default function ContentCalendar() {
                 }`}>
                   {format(day, 'd')}
                 </span>
-                <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-primary/10 rounded-md transition-all">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddEntry?.(day);
+                  }}
+                  className="opacity-0 group-hover:opacity-100 p-1 hover:bg-primary/10 rounded-md transition-all"
+                >
                   <PlusIcon className="w-3 h-3 text-primary" />
                 </button>
               </div>
@@ -185,6 +195,7 @@ export default function ContentCalendar() {
     </div>
   );
 }
+
 
 function PlusIcon({ className }: { className?: string }) {
   return (
