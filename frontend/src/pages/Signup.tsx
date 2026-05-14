@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Sparkles, GitHub, CheckCircle2 } from 'lucide-react';
+import { Sparkles, CheckCircle2 } from 'lucide-react';
+import { GitHub } from '../components/icons/GitHub';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
