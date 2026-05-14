@@ -106,6 +106,31 @@ export default function Affiliate() {
     }
   };
 
+  const handleRequestPayout = async () => {
+    if (!profile?.id || stats.earnings < 500) return;
+
+    setRequestingPayout(true);
+    try {
+      const { data, error } = await supabase.rpc('request_payout', {
+        p_amount: stats.earnings
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success(data.message);
+        fetchAffiliateStats(); // Refresh stats
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error: any) {
+      console.error('Error requesting payout:', error);
+      toast.error('Failed to submit payout request');
+    } finally {
+      setRequestingPayout(false);
+    }
+  };
+
   const metricCards = [
     { 
       label: 'Total Referrals', 
