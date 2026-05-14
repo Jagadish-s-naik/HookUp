@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
 
+export type PostStatus = 'draft' | 'pending' | 'approved' | 'posted' | 'failed';
+
 export interface ScheduledPost {
   id: string;
   user_id: string;
@@ -8,9 +10,10 @@ export interface ScheduledPost {
   content: string | null;
   platform: string;
   scheduled_at: string;
-  status: string;
+  status: PostStatus;
   created_at: string;
 }
+
 
 interface CalendarState {
   entries: ScheduledPost[];
