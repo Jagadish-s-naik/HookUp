@@ -89,9 +89,14 @@ export default function CaptionWriter() {
         <div className="lg:col-span-5 space-y-6">
           <div className="glass rounded-[32px] p-6 border-slate-200 dark:border-slate-800 space-y-6">
             <div className="space-y-4">
-              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">
-                Topic or Hook Text
-              </label>
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                  Topic or Hook Text
+                </label>
+                <span className={`text-[10px] font-bold ${topic.length > 2000 ? 'text-red-500' : 'text-slate-400'}`}>
+                  {topic.length} characters
+                </span>
+              </div>
               <textarea
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
