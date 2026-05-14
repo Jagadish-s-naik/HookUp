@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
@@ -30,7 +31,15 @@ interface GeneratedCaption {
 }
 
 export default function CaptionWriter() {
+  const location = useLocation();
   const [topic, setTopic] = useState('');
+  
+  useEffect(() => {
+    if (location.state?.hookText) {
+      setTopic(location.state.hookText);
+    }
+  }, [location.state]);
+
   const [selectedPlatform, setSelectedPlatform] = useState('instagram');
   const [selectedTone, setSelectedTone] = useState('Professional');
   const [isGenerating, setIsGenerating] = useState(false);
