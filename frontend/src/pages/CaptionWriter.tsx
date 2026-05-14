@@ -206,9 +206,23 @@ export default function CaptionWriter() {
 
                 <div className="flex-1 p-8 space-y-6 overflow-y-auto">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-slate-400">
-                      <MessageSquare className="w-4 h-4" />
-                      <span className="text-xs font-bold uppercase tracking-wider">Main Content</span>
+                    <div className="flex items-center justify-between text-slate-400">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4" />
+                        <span className="text-xs font-bold uppercase tracking-wider">Main Content</span>
+                      </div>
+                      {(() => {
+                        const limit = 
+                          selectedPlatform === 'twitter' ? 280 : 
+                          selectedPlatform === 'linkedin' ? 3000 : 
+                          selectedPlatform === 'instagram' ? 2200 : 2000;
+                        const count = generatedCaption.caption_text.length;
+                        return (
+                          <span className={`text-[10px] font-bold ${count > limit ? 'text-red-500' : 'text-slate-400'}`}>
+                            {count} / {limit} chars
+                          </span>
+                        );
+                      })()}
                     </div>
                     <p className="text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-medium">
                       {generatedCaption.caption_text}
