@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Users, 
@@ -36,20 +36,15 @@ export default function Affiliate() {
   const [loading, setLoading] = useState(true);
   const [copying, setCopying] = useState(false);
 
-  useEffect(() => {
-    if (profile?.id) {
-      fetchAffiliateStats();
-    }
-  }, [profile?.id]);
-
-  const fetchAffiliateStats = async () => {
+  const fetchAffiliateStats = useCallback(async () => {
+    if (!profile?.id) return;
     setLoading(true);
     try {
       // Fetch stats from referrals table
       const { data: referrals, error: refError } = await supabase
         .from('referrals')
         .select('*')
-        .eq('referrer_id', profile?.id);
+        .eq('referrer_id', profile.id);
 
       if (refError) throw refError;
 
@@ -63,13 +58,17 @@ export default function Affiliate() {
         conversion_rate: signups > 0 ? (conversions / signups) * 100 : 0,
         earnings
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching affiliate stats:', error);
       toast.error('Failed to load affiliate stats');
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile?.id]);
+
+  useEffect(() => {
+    fetchAffiliateStats();
+  }, [fetchAffiliateStats]);
 
   const referralLink = `${window.location.origin}/signup?ref=${profile?.referral_code}`;
 
