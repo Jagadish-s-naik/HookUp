@@ -13,11 +13,11 @@ import {
   parseISO
 } from 'date-fns';
 import { ChevronLeft, ChevronRight, Share2, Youtube, Instagram, Twitter, Loader2, Trash2 } from 'lucide-react';
-import { useCalendarStore } from '../../store/calendarStore';
+import { useCalendarStore, ScheduledPost } from '../../store/calendarStore';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '../../lib/supabase';
 
-const PLATFORM_ICONS: Record<string, any> = {
+const PLATFORM_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   instagram: Instagram,
   tiktok: Share2,
   youtube: Youtube,
@@ -35,7 +35,7 @@ const PLATFORM_COLORS: Record<string, string> = {
 
 interface ContentCalendarProps {
   onAddEntry?: (date: Date) => void;
-  onEditEntry?: (entry: any) => void;
+  onEditEntry?: (entry: ScheduledPost) => void;
 }
 
 export default function ContentCalendar({ onAddEntry, onEditEntry }: ContentCalendarProps) {
