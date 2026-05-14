@@ -2,6 +2,7 @@ import { Bell, Search, Zap } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { usePlan } from '../../hooks/usePlan';
 import { useUIStore } from '../../store/uiStore';
+import NotificationDropdown from '../notifications/NotificationDropdown';
 
 export default function TopBar() {
   const { profile, user } = useAuthStore();
@@ -44,10 +45,7 @@ export default function TopBar() {
           {isFree && <Zap className="w-3 h-3 ml-1 fill-current" />}
         </button>
 
-        <button className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 border-2 border-white dark:border-slate-950 rounded-full" />
-        </button>
+        <NotificationDropdown />
 
         <button className="flex items-center gap-2 p-1 pl-3 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
           <span className="text-sm font-medium">{displayName}</span>
