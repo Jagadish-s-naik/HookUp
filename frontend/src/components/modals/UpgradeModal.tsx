@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
-import { useAuthStore } from '../../store/authStore';
 import { useCheckout } from '../../hooks/useCheckout';
 import Button from '../ui/Button';
 
@@ -65,7 +64,7 @@ export default function UpgradeModal() {
       await startCheckout(plan);
       closeUpgradeModal();
     } catch (error) {
-      // Error handled in hook
+      console.error('Upgrade failed:', error);
     }
   };
 

@@ -8,6 +8,13 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   });
 };
 
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id?: string;
+  razorpay_subscription_id?: string;
+  razorpay_signature: string;
+}
+
 interface RazorpayOptions {
   key: string;
   amount?: number;
@@ -25,13 +32,21 @@ interface RazorpayOptions {
   theme: {
     color: string;
   };
-  handler: (response: any) => void;
+  handler: (response: RazorpayResponse) => void;
   modal: {
     ondismiss: () => void;
   };
 }
 
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => {
+      open: () => void;
+    };
+  }
+}
+
 export const openRazorpayCheckout = (options: RazorpayOptions) => {
-  const rzp = new (window as any).Razorpay(options);
+  const rzp = new window.Razorpay(options);
   rzp.open();
 };
