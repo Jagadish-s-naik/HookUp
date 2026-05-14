@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar as CalendarIcon, Instagram, Youtube, Twitter, Share2, Loader2 } from 'lucide-react';
-import { useCalendarStore, ScheduledPost, PostStatus } from '../../store/calendarStore';
+import { X, Calendar as CalendarIcon, Share2, Loader2 } from 'lucide-react';
+import { useCalendarStore, type ScheduledPost, type PostStatus } from '../../store/calendarStore';
 import { useAuthStore } from '../../store/authStore';
 import type { User } from '@supabase/supabase-js';
 import Button from '../ui/Button';
@@ -17,10 +17,10 @@ interface ScheduleModalProps {
 }
 
 const PLATFORMS = [
-  { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'text-pink-500' },
-  { id: 'youtube', name: 'YouTube', icon: Youtube, color: 'text-red-600' },
+  { id: 'instagram', name: 'Instagram', icon: Share2, color: 'text-pink-500' },
+  { id: 'youtube', name: 'YouTube', icon: Share2, color: 'text-red-600' },
   { id: 'tiktok', name: 'TikTok', icon: Share2, color: 'text-slate-900 dark:text-white' },
-  { id: 'twitter', name: 'Twitter', icon: Twitter, color: 'text-blue-400' },
+  { id: 'twitter', name: 'Twitter', icon: Share2, color: 'text-blue-400' },
   { id: 'linkedin', name: 'LinkedIn', icon: Share2, color: 'text-blue-700' },
 ];
 

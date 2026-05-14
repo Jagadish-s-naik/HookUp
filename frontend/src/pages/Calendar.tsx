@@ -4,7 +4,7 @@ import { Plus, Filter } from 'lucide-react';
 import Button from '../components/ui/Button';
 import ContentCalendar from '../components/calendar/ContentCalendar';
 import ScheduleModal from '../components/calendar/ScheduleModal';
-import { ScheduledPost } from '../store/calendarStore';
+import type { ScheduledPost } from '../store/calendarStore';
 
 export default function Calendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);

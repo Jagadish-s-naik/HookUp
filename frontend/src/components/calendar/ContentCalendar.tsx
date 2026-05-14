@@ -12,16 +12,16 @@ import {
   subMonths,
   parseISO
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, Share2, Youtube, Instagram, Twitter, Loader2, Trash2 } from 'lucide-react';
-import { useCalendarStore, ScheduledPost } from '../../store/calendarStore';
+import { ChevronLeft, ChevronRight, Share2, Loader2, Trash2 } from 'lucide-react';
+import { useCalendarStore, type ScheduledPost } from '../../store/calendarStore';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '../../lib/supabase';
 
 const PLATFORM_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  instagram: Instagram,
+  instagram: Share2,
   tiktok: Share2,
-  youtube: Youtube,
-  twitter: Twitter,
+  youtube: Share2,
+  twitter: Share2,
   linkedin: Share2
 };
 

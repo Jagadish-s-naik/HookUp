@@ -6,9 +6,6 @@ import {
   Check, 
   RotateCcw, 
   MessageSquare, 
-  Instagram, 
-  Linkedin, 
-  Twitter, 
   Video,
   Hash,
   Share2
@@ -19,10 +16,10 @@ import toast from 'react-hot-toast';
 import ScheduleModal from '../components/calendar/ScheduleModal';
 
 const PLATFORMS = [
-  { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'text-pink-500' },
-  { id: 'linkedin', name: 'LinkedIn', icon: Linkedin, color: 'text-blue-600' },
+  { id: 'instagram', name: 'Instagram', icon: Share2, color: 'text-pink-500' },
+  { id: 'linkedin', name: 'LinkedIn', icon: Share2, color: 'text-blue-600' },
   { id: 'tiktok', name: 'TikTok', icon: Video, color: 'text-slate-900' },
-  { id: 'twitter', name: 'X / Twitter', icon: Twitter, color: 'text-slate-950' },
+  { id: 'twitter', name: 'X / Twitter', icon: Share2, color: 'text-slate-950' },
 ];
 
 const TONES = ['Professional', 'Humorous', 'Contrarian', 'Educational', 'Emotional', 'Urgent'];
