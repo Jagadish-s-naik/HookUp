@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Check, Info, AlertCircle, Zap, TrendingUp } from 'lucide-react';
+import { Bell, Info, AlertCircle, Zap, TrendingUp } from 'lucide-react';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useAuthStore } from '../../store/authStore';
 import { formatDistanceToNow } from 'date-fns';
@@ -13,8 +13,7 @@ export default function NotificationDropdown() {
     unreadCount, 
     fetchNotifications, 
     markAsRead, 
-    markAllAsRead,
-    isLoading 
+    markAllAsRead
   } = useNotificationStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
