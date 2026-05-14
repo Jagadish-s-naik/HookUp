@@ -34,9 +34,18 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const { setUser, setProfile, setLoading } = useAuthStore();
+  const { setUser, setProfile, setLoading, initializeRealtime, user } = useAuthStore();
+  
+  // Initialize real-time profile listener when user is logged in
+  useEffect(() => {
+    if (user?.id) {
+      const unsubscribe = initializeRealtime();
+      return () => unsubscribe();
+    }
+  }, [user?.id, initializeRealtime]);
 
   useEffect(() => {
+
     const fetchProfile = async (userId: string) => {
       try {
         const { data, error } = await supabase
