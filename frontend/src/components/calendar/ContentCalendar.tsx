@@ -33,6 +33,15 @@ const PLATFORM_COLORS: Record<string, string> = {
   linkedin: 'bg-blue-700'
 };
 
+const STATUS_COLORS: Record<string, string> = {
+  draft: 'bg-slate-400',
+  pending: 'bg-amber-500',
+  approved: 'bg-emerald-500',
+  posted: 'bg-blue-500',
+  failed: 'bg-rose-500'
+};
+
+
 interface ContentCalendarProps {
   onAddEntry?: (date: Date) => void;
   onEditEntry?: (entry: ScheduledPost) => void;
@@ -172,24 +181,33 @@ export default function ContentCalendar({ onAddEntry, onEditEntry }: ContentCale
                         e.stopPropagation();
                         onEditEntry?.(entry);
                       }}
-                      className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:shadow-md transition-all group/item relative overflow-hidden"
+                      className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:shadow-lg transition-all group/item relative overflow-hidden"
                     >
                       <div className={`w-5 h-5 flex-shrink-0 rounded-md ${PLATFORM_COLORS[entry.platform]} flex items-center justify-center shadow-sm`}>
                         <Icon className="w-3 h-3 text-white" />
                       </div>
-                      <span className="text-[10px] font-bold truncate text-slate-700 dark:text-slate-300 pr-4">
-                        {entry.title}
-                      </span>
+                      <div className="flex flex-col min-w-0 pr-4">
+                        <span className="text-[10px] font-bold truncate text-slate-700 dark:text-slate-300">
+                          {entry.title}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <div className={`w-1 h-1 rounded-full ${STATUS_COLORS[entry.status]}`} />
+                          <span className="text-[8px] font-black uppercase tracking-tighter text-slate-400">
+                            {entry.status}
+                          </span>
+                        </div>
+                      </div>
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
                           deleteEntry(entry.id);
                         }}
-                        className="absolute right-1 opacity-0 group-hover/item:opacity-100 p-1 hover:text-red-500 transition-all"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 p-1 hover:text-red-500 transition-all bg-white/90 dark:bg-slate-900/90 rounded-md shadow-sm"
                       >
                         <Trash2 className="w-2.5 h-2.5" />
                       </button>
                     </div>
+
                   );
                 })}
               </div>
