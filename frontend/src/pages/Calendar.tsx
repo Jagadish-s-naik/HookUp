@@ -1,23 +1,31 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Plus, Filter } from 'lucide-react';
 import Button from '../components/ui/Button';
 import ContentCalendar from '../components/calendar/ContentCalendar';
+import ScheduleModal from '../components/calendar/ScheduleModal';
 
 export default function Calendar() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">Content Calendar</h1>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Content Calendar</h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium">
             Plan, schedule, and visualize your content strategy.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2 border-slate-200 dark:border-slate-800">
             <Filter className="w-4 h-4" /> Filter
           </Button>
-          <Button size="sm" className="gap-2 shadow-lg shadow-primary/20">
+          <Button 
+            size="sm" 
+            className="gap-2 shadow-lg shadow-primary/20"
+            onClick={() => setIsModalOpen(true)}
+          >
             <Plus className="w-4 h-4" /> Schedule Post
           </Button>
         </div>
@@ -26,10 +34,16 @@ export default function Calendar() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-3xl border-slate-200 dark:border-slate-800 overflow-hidden"
+        className="glass rounded-[32px] border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-none"
       >
         <ContentCalendar />
       </motion.div>
+
+      <ScheduleModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 }
+
