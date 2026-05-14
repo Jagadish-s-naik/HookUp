@@ -24,6 +24,7 @@ import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
+import { useCheckout } from '../hooks/useCheckout';
 
 const niches = [
   { id: 'tech', label: 'Technology', icon: Cpu, color: 'bg-blue-500' },
@@ -83,8 +84,11 @@ const plans = [
 export default function Onboarding() {
   const { step, setStep, data, updateData } = useOnboardingStore();
   const { user, profile, setProfile } = useAuthStore();
+  const { startCheckout, isLoading: isPaymentLoading } = useCheckout();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  const isLoading = isSubmitting || isPaymentLoading;
 
   const handleNext = () => setStep(step + 1);
   const handleBack = () => setStep(step - 1);
@@ -111,13 +115,28 @@ export default function Onboarding() {
 
       if (error) throw error;
 
-      // Update local store
+      // If it's a paid plan, trigger checkout
+      if (data.plan !== 'free') {
+        try {
+          await startCheckout(data.plan);
+          // startCheckout will navigate to success page on success
+        } catch (paymentError) {
+          // If payment failed/cancelled, we still saved their free profile
+          // But maybe they want to try again or just go to dashboard on free
+          toast.error("Payment was not completed. You have been started on the Free plan.");
+          navigate('/dashboard');
+        }
+      } else {
+        toast.success('Onboarding complete! Welcome aboard.');
+        navigate('/dashboard');
+      }
+
+      // Update local store with what we saved (initially this will have the chosen plan, 
+      // but the backend webhook will update it to confirmed plan later. 
+      // For immediate UI feedback, we can use the updatedProfile)
       if (updatedProfile) {
         setProfile(updatedProfile);
       }
-
-      toast.success('Onboarding complete! Welcome aboard.');
-      navigate('/dashboard');
     } catch (error) {
       console.error('Onboarding error:', error);
       toast.error('Failed to save your preferences. Please try again.');
@@ -414,8 +433,8 @@ export default function Onboarding() {
                   <Button 
                     className="flex-[2] gap-2" 
                     onClick={handleComplete} 
-                    disabled={isSubmitting}
-                    isLoading={isSubmitting}
+                    disabled={isLoading}
+                    isLoading={isLoading}
                   >
                     <Sparkles className="w-4 h-4" /> Finish Onboarding
                   </Button>
