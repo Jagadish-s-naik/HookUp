@@ -9,6 +9,9 @@ interface ScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDate?: Date;
+  initialTitle?: string;
+  initialContent?: string;
+  initialPlatform?: string;
 }
 
 const PLATFORMS = [
@@ -19,16 +22,36 @@ const PLATFORMS = [
   { id: 'linkedin', name: 'LinkedIn', icon: Share2, color: 'text-blue-700' },
 ];
 
-export default function ScheduleModal({ isOpen, onClose, selectedDate }: ScheduleModalProps) {
+export default function ScheduleModal({ 
+  isOpen, 
+  onClose, 
+  selectedDate,
+  initialTitle = '',
+  initialContent = '',
+  initialPlatform = 'instagram'
+}: ScheduleModalProps) {
   const { user } = useAuthStore();
   const { addEntry } = useCalendarStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    platform: 'instagram',
+    title: initialTitle,
+    content: initialContent,
+    platform: initialPlatform,
     date: selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     time: '12:00'
+  });
+
+  // Update form data when initial values change (e.g. when modal is opened with new content)
+  useState(() => {
+    if (isOpen) {
+      setFormData(prev => ({
+        ...prev,
+        title: initialTitle || prev.title,
+        content: initialContent || prev.content,
+        platform: initialPlatform || prev.platform,
+        date: selectedDate ? selectedDate.toISOString().split('T')[0] : prev.date,
+      }));
+    }
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
