@@ -391,6 +391,7 @@ export default function Generate() {
               )}
             </AnimatePresence>
           </div>
+        </div>
       </div>
     </div>
   );
