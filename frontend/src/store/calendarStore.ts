@@ -17,6 +17,7 @@ interface CalendarState {
   isLoading: boolean;
   fetchEntries: (userId: string) => Promise<void>;
   addEntry: (entry: Omit<ScheduledPost, 'id' | 'created_at' | 'status'>) => Promise<void>;
+  updateEntry: (id: string, entry: Partial<ScheduledPost>) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
 }
 
@@ -56,6 +57,25 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       set({ entries: [...entries, data] });
     } catch (error) {
       console.error('Error adding calendar entry:', error);
+      throw error;
+    }
+  },
+
+  updateEntry: async (id, entry) => {
+    try {
+      const { data, error } = await supabase
+        .from('scheduled_posts')
+        .update(entry)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const { entries } = get();
+      set({ entries: entries.map(e => e.id === id ? data : e) });
+    } catch (error) {
+      console.error('Error updating calendar entry:', error);
       throw error;
     }
   },
