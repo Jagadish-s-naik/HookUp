@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Sparkles, Library, BarChart3, User, Settings, LogOut, Gift, Calendar, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Sparkles, Library, BarChart3, Settings, LogOut, Gift, Calendar, MessageSquare } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 
