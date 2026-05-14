@@ -17,6 +17,7 @@ import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
+import ScheduleModal from '../components/calendar/ScheduleModal';
 
 const PLATFORMS = [
   { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'text-pink-500' },
