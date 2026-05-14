@@ -1,16 +1,16 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Sparkles, Library, BarChart3, User, Settings, LogOut, Gift, Calendar } from 'lucide-react';
+import { LayoutDashboard, Sparkles, Library, BarChart3, User, Settings, LogOut, Gift, Calendar, MessageSquare } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-  { icon: Sparkles, label: 'Generate', path: '/generate' },
-  { icon: Calendar, label: 'Calendar', path: '/calendar' },
+  { icon: Sparkles, label: 'Generate Hooks', path: '/generate' },
+  { icon: MessageSquare, label: 'Caption Writer', path: '/captions' },
+  { icon: Calendar, label: 'Content Calendar', path: '/calendar' },
   { icon: Library, label: 'Library', path: '/library' },
   { icon: BarChart3, label: 'Analytics', path: '/analytics' },
   { icon: Gift, label: 'Affiliate', path: '/affiliate' },
-  { icon: User, label: 'Account', path: '/account' },
 ];
 
 export default function Sidebar() {
