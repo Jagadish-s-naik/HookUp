@@ -36,6 +36,7 @@ export default function CaptionWriter() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCaption, setGeneratedCaption] = useState<any>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   const handleGenerate = async () => {
     if (!topic) {
@@ -258,9 +259,14 @@ export default function CaptionWriter() {
                         <p className="text-[10px] text-slate-500">Perfectly formatted for your selection.</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleCopy}>
-                      Copy All
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" onClick={() => setIsScheduleModalOpen(true)}>
+                        Schedule
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handleCopy}>
+                        Copy All
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -285,6 +291,14 @@ export default function CaptionWriter() {
           </AnimatePresence>
         </div>
       </div>
+
+      <ScheduleModal 
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        initialTitle={topic.length > 50 ? topic.substring(0, 47) + '...' : topic}
+        initialContent={generatedCaption ? `${generatedCaption.caption_text}\n\n${generatedCaption.hashtags?.map((h: string) => `#${h.replace('#', '')}`).join(' ')}` : ''}
+        initialPlatform={selectedPlatform}
+      />
     </div>
   );
 }
