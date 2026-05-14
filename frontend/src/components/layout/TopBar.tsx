@@ -8,7 +8,7 @@ export default function TopBar() {
   const { plan, usage, limits, isFree } = usePlan();
   const { openUpgradeModal } = useUIStore();
 
-  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
+  const displayName = profile?.name || user?.email?.split('@')[0] || 'User';
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
