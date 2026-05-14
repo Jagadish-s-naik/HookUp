@@ -156,6 +156,44 @@ export default function Onboarding() {
                 className="space-y-6"
               >
                 <div>
+                  <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">What should we call you?</h1>
+                  <p className="text-slate-500 dark:text-slate-400">Let's start with your name to personalize your experience.</p>
+                </div>
+
+                <div className="relative group">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                  <input
+                    type="text"
+                    value={data.name}
+                    onChange={(e) => updateData({ name: e.target.value })}
+                    placeholder="Enter your full name"
+                    className="w-full h-14 pl-12 pr-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-xl focus:border-primary outline-none transition-all text-lg font-medium"
+                    autoFocus
+                  />
+                </div>
+
+                <div className="pt-4">
+                  <Button 
+                    className="w-full h-12" 
+                    onClick={handleNext} 
+                    disabled={!data.name || data.name.length < 2}
+                  >
+                    Get Started <ChevronRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                variants={stepVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="space-y-6"
+              >
+                <div>
                   <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Select your niche</h1>
                   <p className="text-slate-500 dark:text-slate-400">This helps us tailor your hook ideas to your specific industry.</p>
                 </div>
@@ -165,7 +203,7 @@ export default function Onboarding() {
                     <button
                       key={niche.id}
                       onClick={() => updateData({ niche: niche.id })}
-                      className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-3 hover:scale-[1.02] active:scale-[0.98] ${
+                      className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-3 hover:scale-[1.02] active:scale-[0.98] relative ${
                         data.niche === niche.id
                           ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/5'
                           : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-200 dark:hover:border-slate-700'
@@ -182,9 +220,12 @@ export default function Onboarding() {
                   ))}
                 </div>
 
-                <div className="pt-4">
+                <div className="flex gap-4 pt-4">
+                  <Button variant="outline" className="flex-1" onClick={handleBack}>
+                    <ChevronLeft className="mr-2 w-4 h-4" /> Back
+                  </Button>
                   <Button 
-                    className="w-full h-12" 
+                    className="flex-[2]" 
                     onClick={handleNext} 
                     disabled={!data.niche}
                   >
@@ -194,9 +235,9 @@ export default function Onboarding() {
               </motion.div>
             )}
 
-            {step === 2 && (
+            {step === 3 && (
               <motion.div
-                key="step2"
+                key="step3"
                 variants={stepVariants}
                 initial="initial"
                 animate="animate"
@@ -252,9 +293,9 @@ export default function Onboarding() {
               </motion.div>
             )}
 
-            {step === 3 && (
+            {step === 4 && (
               <motion.div
-                key="step3"
+                key="step4"
                 variants={stepVariants}
                 initial="initial"
                 animate="animate"
@@ -295,9 +336,78 @@ export default function Onboarding() {
                     <ChevronLeft className="mr-2 w-4 h-4" /> Back
                   </Button>
                   <Button 
+                    className="flex-[2]" 
+                    onClick={handleNext} 
+                    disabled={!data.goal}
+                  >
+                    Continue <ChevronRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 5 && (
+              <motion.div
+                key="step5"
+                variants={stepVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="space-y-6"
+              >
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Choose your plan</h1>
+                  <p className="text-slate-500 dark:text-slate-400">Select the plan that fits your content needs. You can change this later.</p>
+                </div>
+
+                <div className="space-y-4">
+                  {plans.map((plan) => (
+                    <button
+                      key={plan.id}
+                      onClick={() => updateData({ plan: plan.id })}
+                      className={`w-full p-5 rounded-2xl border-2 transition-all flex items-center gap-4 text-left hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden ${
+                        data.plan === plan.id
+                          ? 'border-primary bg-primary/5 text-primary shadow-lg'
+                          : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-200 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      {plan.popular && (
+                        <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+                          Most Popular
+                        </div>
+                      )}
+                      
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-slate-50 dark:bg-slate-800 ${plan.color}`}>
+                        <plan.icon className="w-6 h-6" />
+                      </div>
+                      
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <p className="font-bold text-lg">{plan.label}</p>
+                          <p className="font-black text-xl">{plan.price}<span className="text-xs font-normal opacity-60">/mo</span></p>
+                        </div>
+                        <p className="text-xs opacity-70 mb-3">{plan.description}</p>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1">
+                          {plan.features.slice(0, 2).map((feature, i) => (
+                            <div key={i} className="flex items-center gap-1 text-[11px] font-medium">
+                              <CheckCircle2 className="w-3 h-3 text-green-500" />
+                              {feature}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <Button variant="outline" className="flex-1" onClick={handleBack}>
+                    <ChevronLeft className="mr-2 w-4 h-4" /> Back
+                  </Button>
+                  <Button 
                     className="flex-[2] gap-2" 
                     onClick={handleComplete} 
-                    disabled={!data.goal || isSubmitting}
+                    disabled={isSubmitting}
                     isLoading={isSubmitting}
                   >
                     <Sparkles className="w-4 h-4" /> Finish Onboarding
