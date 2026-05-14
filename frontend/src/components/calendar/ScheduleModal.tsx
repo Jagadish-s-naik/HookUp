@@ -73,7 +73,7 @@ function ScheduleModalContent({
           title: formData.title,
           content: formData.content,
           platform: formData.platform,
-          status: formData.status as any,
+          status: formData.status as PostStatus,
           scheduled_at: scheduledAt
         });
       } else {
@@ -82,7 +82,7 @@ function ScheduleModalContent({
           title: formData.title,
           content: formData.content,
           platform: formData.platform,
-          status: formData.status as any,
+          status: formData.status as PostStatus,
           scheduled_at: scheduledAt
         });
       }
