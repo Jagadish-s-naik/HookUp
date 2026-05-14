@@ -22,6 +22,10 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
     - [x] High-fidelity `Account.tsx` page.
     - [x] Real-time profile updates.
     - [x] Dynamic usage tracking (generation limits based on plan).
+- [x] **Marketing & Public Presence**
+    - [x] Premium Landing Page (`Landing.tsx`) with motion design.
+    - [x] Interactive Viral Hook Generator demo.
+    - [x] Modern public-facing navigation (`LandingNavbar.tsx`).
 
 ---
 
@@ -32,6 +36,12 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
     - [ ] Replace development mock Plan IDs with production IDs.
 - [ ] **State Management Polish**
     - [ ] Real-time invalidation for `usePlan` hook after successful upgrade.
+- [ ] **Notification System**
+    - [ ] Real-time notification center (Supabase Realtime).
+    - [ ] Functional dropdown in `TopBar.tsx`.
+- [ ] **Content Calendar**
+    - [ ] Visual dashboard for scheduling hooks.
+    - [ ] Status tracking (Draft, Pending, Approved).
 
 ---
 
