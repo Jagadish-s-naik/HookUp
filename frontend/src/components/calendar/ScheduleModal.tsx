@@ -42,17 +42,17 @@ export default function ScheduleModal({
   });
 
   // Update form data when initial values change (e.g. when modal is opened with new content)
-  useState(() => {
+  useEffect(() => {
     if (isOpen) {
-      setFormData(prev => ({
-        ...prev,
-        title: initialTitle || prev.title,
-        content: initialContent || prev.content,
-        platform: initialPlatform || prev.platform,
-        date: selectedDate ? selectedDate.toISOString().split('T')[0] : prev.date,
-      }));
+      setFormData({
+        title: initialTitle,
+        content: initialContent,
+        platform: initialPlatform,
+        date: selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        time: '12:00'
+      });
     }
-  });
+  }, [isOpen, initialTitle, initialContent, initialPlatform, selectedDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
