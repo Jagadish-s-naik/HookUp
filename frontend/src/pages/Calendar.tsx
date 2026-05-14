@@ -7,6 +7,12 @@ import ScheduleModal from '../components/calendar/ScheduleModal';
 
 export default function Calendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDateForModal, setSelectedDateForModal] = useState<Date | undefined>(undefined);
+
+  const handleAddEntry = (date?: Date) => {
+    setSelectedDateForModal(date);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="space-y-8">
@@ -24,7 +30,7 @@ export default function Calendar() {
           <Button 
             size="sm" 
             className="gap-2 shadow-lg shadow-primary/20"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => handleAddEntry()}
           >
             <Plus className="w-4 h-4" /> Schedule Post
           </Button>
@@ -36,14 +42,19 @@ export default function Calendar() {
         animate={{ opacity: 1, y: 0 }}
         className="glass rounded-[32px] border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-none"
       >
-        <ContentCalendar />
+        <ContentCalendar onAddEntry={handleAddEntry} />
       </motion.div>
 
       <ScheduleModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedDateForModal(undefined);
+        }} 
+        selectedDate={selectedDateForModal}
       />
     </div>
   );
 }
+
 
