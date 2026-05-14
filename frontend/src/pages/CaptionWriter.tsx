@@ -14,7 +14,7 @@ import {
   Share2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../store/authStore';
+import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
 import ScheduleModal from '../components/calendar/ScheduleModal';

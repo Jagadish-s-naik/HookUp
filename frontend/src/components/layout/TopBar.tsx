@@ -1,4 +1,4 @@
-import { Bell, Search, Zap } from 'lucide-react';
+import { Search, Zap } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { usePlan } from '../../hooks/usePlan';
 import { useUIStore } from '../../store/uiStore';
