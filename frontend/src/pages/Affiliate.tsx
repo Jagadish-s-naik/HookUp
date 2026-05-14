@@ -71,9 +71,13 @@ export default function Affiliate() {
   }, [profile]);
 
   useEffect(() => {
-    if (profile?.id) {
-      fetchAffiliateStats();
-    }
+    const triggerFetch = async () => {
+      if (profile?.id) {
+        await Promise.resolve();
+        fetchAffiliateStats();
+      }
+    };
+    triggerFetch();
   }, [profile?.id, fetchAffiliateStats]);
 
   const referralLink = `${window.location.origin}/signup?ref=${profile?.referral_code}`;
