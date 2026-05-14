@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { loadRazorpayScript, openRazorpayCheckout, RazorpayResponse, RazorpayOptions } from '../lib/razorpay';
+import { loadRazorpayScript, openRazorpayCheckout, type RazorpayResponse, type RazorpayOptions } from '../lib/razorpay';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
