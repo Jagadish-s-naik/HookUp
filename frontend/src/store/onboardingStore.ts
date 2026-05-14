@@ -1,9 +1,11 @@
 import { create } from 'zustand';
 
 export type OnboardingData = {
+  name: string;
   niche: string;
   platforms: string[];
   goal: string;
+  plan: string;
 };
 
 interface OnboardingState {
