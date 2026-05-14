@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { User } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 
 export interface UserProfile {
   id: string;
@@ -37,6 +38,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setProfile: (profile) => set({ profile }),
   setLoading: (isLoading) => set({ isLoading }),
   signOut: async () => {
+    await supabase.auth.signOut();
     set({ user: null, profile: null });
   },
 }));
