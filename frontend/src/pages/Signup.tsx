@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Sparkles, Github, CheckCircle2 } from 'lucide-react';
+import { Sparkles, GitHub, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -133,7 +133,7 @@ export default function Signup() {
                 Google
               </Button>
               <Button variant="outline" className="w-full gap-2 text-xs">
-                <Github className="w-3 h-3" />
+                <GitHub className="w-3 h-3" />
                 GitHub
               </Button>
             </div>
