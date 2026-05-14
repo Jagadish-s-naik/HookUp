@@ -25,6 +25,13 @@ interface AffiliateStats {
   earnings: number;
 }
 
+interface PayoutRequest {
+  id: string;
+  amount: number;
+  status: 'pending' | 'processing' | 'completed' | 'rejected';
+  created_at: string;
+}
+
 export default function Affiliate() {
   const { profile } = useAuthStore();
   const [stats, setStats] = useState<AffiliateStats>({
@@ -36,6 +43,7 @@ export default function Affiliate() {
   const [loading, setLoading] = useState(true);
   const [copying, setCopying] = useState(false);
   const [requestingPayout, setRequestingPayout] = useState(false);
+  const [payoutRequests, setPayoutRequests] = useState<PayoutRequest[]>([]);
 
   const fetchAffiliateStats = useCallback(async () => {
     if (!profile?.id) return;
@@ -63,9 +71,19 @@ export default function Affiliate() {
         conversion_rate: signups > 0 ? (conversions / signups) * 100 : 0,
         earnings
       });
+
+      // Fetch payout requests
+      const { data: payouts, error: payoutError } = await supabase
+        .from('payout_requests')
+        .select('*')
+        .eq('user_id', profile.id)
+        .order('created_at', { ascending: false });
+
+      if (payoutError) throw payoutError;
+      setPayoutRequests(payouts || []);
     } catch (error: unknown) {
-      console.error('Error fetching affiliate stats:', error);
-      toast.error('Failed to load affiliate stats');
+      console.error('Error fetching affiliate data:', error);
+      toast.error('Failed to load affiliate data');
     } finally {
       setLoading(false);
     }
@@ -322,6 +340,67 @@ export default function Affiliate() {
                   {requestingPayout ? 'Processing...' : 'Request Payout'}
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Payout History Section */}
+        <div className="lg:col-span-12">
+          <div className="glass p-8 rounded-3xl border-slate-100 dark:border-slate-800 space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <IndianRupee className="w-5 h-5 text-primary" /> Payout History
+              </h3>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800">
+                    <th className="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
+                    <th className="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Amount</th>
+                    <th className="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                  {payoutRequests.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="py-12 text-center text-slate-400 text-sm italic">
+                        No payout requests found.
+                      </td>
+                    </tr>
+                  ) : (
+                    payoutRequests.map((payout) => (
+                      <tr key={payout.id} className="group hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                        <td className="py-4 px-4">
+                          <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            {new Date(payout.created_at).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="text-sm font-bold text-slate-900 dark:text-white">
+                            ₹{payout.amount}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            payout.status === 'completed' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                            payout.status === 'pending' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' :
+                            payout.status === 'processing' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                            'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400'
+                          }`}>
+                            {payout.status.charAt(0).toUpperCase() + payout.status.slice(1)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

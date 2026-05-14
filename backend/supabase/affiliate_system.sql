@@ -1,8 +1,43 @@
--- ==========================================
--- Affiliate & Referral System Migration
--- ==========================================
+-- 1. Update Users Table
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS referral_code text UNIQUE;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS referred_by text;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS affiliate_earnings numeric DEFAULT 0;
 
--- 1. Function to atomically increment affiliate earnings
+-- Function to generate a random unique referral code
+CREATE OR REPLACE FUNCTION public.generate_unique_referral_code()
+RETURNS text AS $$
+DECLARE
+  new_code text;
+  done bool;
+BEGIN
+  done := false;
+  WHILE NOT done LOOP
+    new_code := upper(substring(md5(random()::text) from 1 for 8));
+    SELECT NOT EXISTS (SELECT 1 FROM public.users WHERE referral_code = new_code) INTO done;
+  END LOOP;
+  RETURN new_code;
+END;
+$$ LANGUAGE plpgsql VOLATILE;
+
+-- Trigger function to assign referral code to new users
+CREATE OR REPLACE FUNCTION public.handle_new_user_referral()
+RETURNS trigger AS $$
+BEGIN
+  IF NEW.referral_code IS NULL THEN
+    NEW.referral_code := public.generate_unique_referral_code();
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger
+DROP TRIGGER IF EXISTS on_user_created_referral ON public.users;
+CREATE TRIGGER on_user_created_referral
+  BEFORE INSERT ON public.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user_referral();
+
+-- 2. Function to atomically increment affiliate earnings
 CREATE OR REPLACE FUNCTION public.increment_affiliate_earnings(p_user_id uuid, p_amount numeric)
 RETURNS void AS $$
 BEGIN
