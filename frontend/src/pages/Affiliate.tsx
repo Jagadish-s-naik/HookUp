@@ -141,7 +141,7 @@ export default function Affiliate() {
       } else {
         toast.error(data.message);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error requesting payout:', error);
       toast.error('Failed to submit payout request');
     } finally {
