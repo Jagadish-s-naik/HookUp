@@ -26,6 +26,16 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
     - [x] Premium Landing Page (`Landing.tsx`) with motion design.
     - [x] Interactive Viral Hook Generator demo.
     - [x] Modern public-facing navigation (`LandingNavbar.tsx`).
+- [x] **Affiliate Program**
+    - [x] High-fidelity `Affiliate.tsx` page.
+    - [x] Payout history tracking with visual status indicators.
+    - [x] Referral metrics fetching.
+- [x] **Content Calendar (Initial)**
+    - [x] `ScheduleModal.tsx` for scheduling and editing posts.
+    - [x] Delete functionality with confirmation.
+- [x] **Code Quality**
+    - [x] Project-wide linting cleanup (0 errors).
+    - [x] Improved type safety across frontend components.
 
 ---
 
@@ -39,8 +49,8 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
 - [ ] **Notification System**
     - [ ] Real-time notification center (Supabase Realtime).
     - [ ] Functional dropdown in `TopBar.tsx`.
-- [ ] **Content Calendar**
-    - [ ] Visual dashboard for scheduling hooks.
+- [ ] **Content Calendar Dashboard**
+    - [ ] Visual grid view for the calendar.
     - [ ] Status tracking (Draft, Pending, Approved).
 
 ---
@@ -51,8 +61,9 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
     - [ ] Build the Content Calendar dashboard.
 - [ ] **Analytics & Reporting**
     - [ ] Detailed performance metrics for generated hooks.
-- [ ] **Affiliate Program**
-    - [ ] Referral link generation and tracking.
+- [ ] **Affiliate Backend**
+    - [ ] Secure payout request processing logic.
+    - [ ] Automated commission calculation triggers.
 
 ---
 
