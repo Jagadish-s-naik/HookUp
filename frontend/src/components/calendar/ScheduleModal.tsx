@@ -33,8 +33,9 @@ export default function ScheduleModal({
   editingEntry
 }: ScheduleModalProps) {
   const { user } = useAuthStore();
-  const { addEntry, updateEntry } = useCalendarStore();
+  const { addEntry, updateEntry, deleteEntry } = useCalendarStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     title: initialTitle,
     content: initialContent,
@@ -100,6 +101,21 @@ export default function ScheduleModal({
     }
   };
 
+  const handleDelete = async () => {
+    if (!editingEntry) return;
+    if (!confirm('Are you sure you want to delete this scheduled post?')) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteEntry(editingEntry.id);
+      onClose();
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -119,8 +135,10 @@ export default function ScheduleModal({
           >
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
               <div>
-                <h3 className="text-xl font-black tracking-tight">Schedule Post</h3>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">Plan your next viral hit</p>
+                <h3 className="text-xl font-black tracking-tight">{editingEntry ? 'Edit Post' : 'Schedule Post'}</h3>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                  {editingEntry ? 'Update your content details' : 'Plan your next viral hit'}
+                </p>
               </div>
               <button 
                 onClick={onClose}
@@ -198,14 +216,28 @@ export default function ScheduleModal({
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="w-full py-4 rounded-2xl shadow-xl shadow-primary/20 gap-2"
-              >
-                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CalendarIcon className="w-5 h-5" />}
-                {isSubmitting ? 'Scheduling...' : 'Schedule Post'}
-              </Button>
+              <div className="flex gap-3">
+                {editingEntry && (
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={handleDelete}
+                    disabled={isSubmitting || isDeleting}
+                    className="flex-1 py-4 rounded-2xl border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors gap-2"
+                  >
+                    {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : <X className="w-5 h-5" />}
+                    Delete
+                  </Button>
+                )}
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting || isDeleting}
+                  className={`${editingEntry ? 'flex-[2]' : 'w-full'} py-4 rounded-2xl shadow-xl shadow-primary/20 gap-2`}
+                >
+                  {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CalendarIcon className="w-5 h-5" />}
+                  {isSubmitting ? (editingEntry ? 'Updating...' : 'Scheduling...') : (editingEntry ? 'Update Post' : 'Schedule Post')}
+                </Button>
+              </div>
             </form>
           </motion.div>
         </>
