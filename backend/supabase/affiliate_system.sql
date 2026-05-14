@@ -12,7 +12,24 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 2. Payout Requests Table
+-- 2. Referrals Table
+CREATE TABLE IF NOT EXISTS public.referrals (
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  referrer_id       uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  referred_id       uuid NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
+  commission_amount numeric DEFAULT 0,
+  converted_at      timestamptz,
+  created_at        timestamptz DEFAULT now()
+);
+
+-- Enable RLS
+ALTER TABLE public.referrals ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Referrers can view their referrals"
+  ON public.referrals FOR SELECT
+  USING (auth.uid() = referrer_id);
+
+-- 3. Payout Requests Table
 CREATE TABLE IF NOT EXISTS public.payout_requests (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id      uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
