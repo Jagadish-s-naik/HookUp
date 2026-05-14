@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   format, 
   startOfMonth, 
@@ -9,9 +9,12 @@ import {
   isSameMonth, 
   isSameDay, 
   addMonths, 
-  subMonths 
+  subMonths,
+  parseISO
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, Share2, Youtube, Instagram, Twitter } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Share2, Youtube, Instagram, Twitter, Loader2 } from 'lucide-react';
+import { useCalendarStore } from '../../store/calendarStore';
+import { useAuthStore } from '../../store/authStore';
 
 const PLATFORM_ICONS: Record<string, any> = {
   instagram: Instagram,
@@ -32,6 +35,14 @@ const PLATFORM_COLORS: Record<string, string> = {
 export default function ContentCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const { user } = useAuthStore();
+  const { entries, isLoading, fetchEntries } = useCalendarStore();
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchEntries(user.id);
+    }
+  }, [user?.id, fetchEntries]);
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(monthStart);
@@ -43,18 +54,20 @@ export default function ContentCalendar() {
     end: endDate,
   });
 
-  // Mock data for initial visualization
-  const mockEntries = [
-    { id: '1', date: new Date(), platform: 'instagram', title: 'How I built HookAI' },
-    { id: '2', date: new Date(), platform: 'youtube', title: '10 Viral Hook Secrets' },
-    { id: '3', date: new Date(Date.now() + 86400000 * 2), platform: 'tiktok', title: 'POV: You use AI hooks' },
-  ];
-
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
 
   return (
-    <div className="bg-white dark:bg-slate-950">
+    <div className="bg-white dark:bg-slate-950 min-h-[600px] relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/50 dark:bg-slate-950/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Strategy...</p>
+          </div>
+        </div>
+      )}
+
       {/* Calendar Header */}
       <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
         <h2 className="text-xl font-bold">
@@ -93,8 +106,8 @@ export default function ContentCalendar() {
 
       {/* Calendar Grid */}
       <div className="grid grid-cols-7">
-        {calendarDays.map((day, idx) => {
-          const dayEntries = mockEntries.filter(entry => isSameDay(entry.date, day));
+        {calendarDays.map((day) => {
+          const dayEntries = entries.filter(entry => isSameDay(parseISO(entry.scheduled_at), day));
           const isCurrentMonth = isSameMonth(day, monthStart);
           const isToday = isSameDay(day, new Date());
           const isSelected = isSameDay(day, selectedDate);
@@ -103,35 +116,35 @@ export default function ContentCalendar() {
             <div 
               key={day.toString()}
               onClick={() => setSelectedDate(day)}
-              className={`min-h-[120px] p-2 border-r border-b border-slate-100 dark:border-slate-800 transition-all cursor-pointer group ${
+              className={`min-h-[140px] p-2 border-r border-b border-slate-100 dark:border-slate-800 transition-all cursor-pointer group ${
                 !isCurrentMonth ? 'bg-slate-50/30 dark:bg-slate-900/10' : ''
-              } ${isSelected ? 'ring-2 ring-inset ring-primary' : ''}`}
+              } ${isSelected ? 'ring-2 ring-inset ring-primary z-[1]' : ''}`}
             >
               <div className="flex items-center justify-between mb-2">
                 <span className={`text-xs font-bold rounded-lg w-7 h-7 flex items-center justify-center ${
                   isToday 
-                    ? 'bg-primary text-white' 
+                    ? 'bg-primary text-white shadow-lg shadow-primary/20' 
                     : isCurrentMonth ? 'text-slate-700 dark:text-slate-300' : 'text-slate-300 dark:text-slate-600'
                 }`}>
                   {format(day, 'd')}
                 </span>
                 <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-primary/10 rounded-md transition-all">
-                  <Plus className="w-3 h-3 text-primary" />
+                  <PlusIcon className="w-3 h-3 text-primary" />
                 </button>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {dayEntries.map(entry => {
                   const Icon = PLATFORM_ICONS[entry.platform] || Share2;
                   return (
                     <div 
                       key={entry.id}
-                      className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary/30 transition-all"
+                      className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:shadow-md transition-all overflow-hidden"
                     >
-                      <div className={`w-5 h-5 rounded-md ${PLATFORM_COLORS[entry.platform]} flex items-center justify-center`}>
+                      <div className={`w-5 h-5 flex-shrink-0 rounded-md ${PLATFORM_COLORS[entry.platform]} flex items-center justify-center shadow-sm`}>
                         <Icon className="w-3 h-3 text-white" />
                       </div>
-                      <span className="text-[10px] font-bold truncate max-w-[80px]">
+                      <span className="text-[10px] font-bold truncate text-slate-700 dark:text-slate-300">
                         {entry.title}
                       </span>
                     </div>
@@ -146,10 +159,11 @@ export default function ContentCalendar() {
   );
 }
 
-function Plus({ className }: { className?: string }) {
+function PlusIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
     </svg>
   );
 }
+
