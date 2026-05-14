@@ -20,15 +20,11 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      storeSignOut();
+      await storeSignOut();
       toast.success('Logged out successfully');
       navigate('/login');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to logout';
-      toast.error(message);
+      toast.error('Failed to logout');
     }
   };
 
