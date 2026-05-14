@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar as CalendarIcon, Instagram, Youtube, Twitter, Share2, Loader2 } from 'lucide-react';
-import { useCalendarStore, ScheduledPost } from '../../store/calendarStore';
+import { useCalendarStore, ScheduledPost, PostStatus } from '../../store/calendarStore';
 import { useAuthStore } from '../../store/authStore';
 import type { User } from '@supabase/supabase-js';
 import Button from '../ui/Button';
