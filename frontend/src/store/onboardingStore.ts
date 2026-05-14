@@ -19,9 +19,11 @@ interface OnboardingState {
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   step: 1,
   data: {
+    name: '',
     niche: '',
     platforms: [],
     goal: '',
+    plan: 'free',
   },
   setStep: (step) => set({ step }),
   updateData: (newData) => set((state) => ({ 
@@ -29,6 +31,6 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   })),
   reset: () => set({ 
     step: 1, 
-    data: { niche: '', platforms: [], goal: '' } 
+    data: { name: '', niche: '', platforms: [], goal: '', plan: 'free' } 
   }),
 }));
