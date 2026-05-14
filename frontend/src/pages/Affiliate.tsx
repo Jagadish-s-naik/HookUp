@@ -35,6 +35,7 @@ export default function Affiliate() {
   });
   const [loading, setLoading] = useState(true);
   const [copying, setCopying] = useState(false);
+  const [requestingPayout, setRequestingPayout] = useState(false);
 
   const fetchAffiliateStats = useCallback(async () => {
     if (!profile?.id) return;
