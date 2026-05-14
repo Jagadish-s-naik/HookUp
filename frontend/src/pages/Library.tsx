@@ -95,7 +95,11 @@ export default function Library() {
   }, [selectedPlatform, selectedTone, minScore, sortBy]);
 
   useEffect(() => {
-    fetchHooks();
+    const triggerFetch = async () => {
+      await Promise.resolve();
+      fetchHooks();
+    };
+    triggerFetch();
   }, [fetchHooks]);
 
   const removeHook = async (id: string) => {
