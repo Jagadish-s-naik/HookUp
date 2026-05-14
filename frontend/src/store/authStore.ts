@@ -5,7 +5,6 @@ export interface UserProfile {
   id: string;
   email: string;
   name: string | null;
-  name: string | null;
   avatar_url: string | null;
   niche: string | null;
   platforms: string[] | null;
