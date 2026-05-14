@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { loadRazorpayScript, openRazorpayCheckout, type RazorpayResponse, type RazorpayOptions } from '../lib/razorpay';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 export function useCheckout() {
   const [isLoading, setIsLoading] = useState(false);
@@ -57,8 +58,12 @@ export function useCheckout() {
             color: '#7C3AED',
           },
           handler: async (response: RazorpayResponse) => {
-            // Usually we'd verify the payment on the backend here
-            // But for now, we'll assume the Edge Function/Webhook handles the DB update
+            // Wait for a short delay to allow webhook to process (optional but safer)
+            await new Promise(r => setTimeout(r, 2000));
+            
+            // Refresh profile to show new plan
+            await useAuthStore.getState().refreshProfile();
+            
             toast.success("Payment successful!");
             navigate('/payment/success');
             resolve(response);
