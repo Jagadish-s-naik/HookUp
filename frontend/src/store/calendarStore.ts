@@ -19,7 +19,8 @@ interface CalendarState {
   entries: ScheduledPost[];
   isLoading: boolean;
   fetchEntries: (userId: string) => Promise<void>;
-  addEntry: (entry: Omit<ScheduledPost, 'id' | 'created_at' | 'status'>) => Promise<void>;
+  addEntry: (entry: Omit<ScheduledPost, 'id' | 'created_at'>) => Promise<void>;
+
   updateEntry: (id: string, entry: Partial<ScheduledPost>) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
 }
