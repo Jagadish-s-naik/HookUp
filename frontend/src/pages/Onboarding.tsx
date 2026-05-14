@@ -82,7 +82,7 @@ const plans = [
 
 export default function Onboarding() {
   const { step, setStep, data, updateData } = useOnboardingStore();
-  const { user } = useAuthStore();
+  const { user, profile, setProfile } = useAuthStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -95,7 +95,7 @@ export default function Onboarding() {
     
     try {
       // Update profile in Supabase
-      const { error } = await supabase
+      const { data: updatedProfile, error } = await supabase
         .from('users')
         .update({
           name: data.name,
@@ -105,9 +105,16 @@ export default function Onboarding() {
           plan: data.plan,
           onboarding_complete: true,
         })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Update local store
+      if (updatedProfile) {
+        setProfile(updatedProfile);
+      }
 
       toast.success('Onboarding complete! Welcome aboard.');
       navigate('/dashboard');
