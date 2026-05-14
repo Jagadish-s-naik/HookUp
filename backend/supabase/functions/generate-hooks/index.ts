@@ -200,10 +200,26 @@ no markdown. Start your response with [ and end with ].
     }
 
     // Update user usage count
+    const newUsage = profile.hooks_used_today + 1;
     await supabaseClient
       .from('users')
-      .update({ hooks_used_today: profile.hooks_used_today + 1 })
+      .update({ hooks_used_today: newUsage })
       .eq('id', user.id)
+
+    // Trigger Notification if near limit (80% or last one)
+    if (newUsage === limit - 1) {
+      await supabaseClient.from('notifications').insert({
+        user_id: user.id,
+        type: 'alert',
+        message: 'You have only 1 hook left for today! Upgrade to unlock unlimited potential.',
+      });
+    } else if (newUsage === limit) {
+      await supabaseClient.from('notifications').insert({
+        user_id: user.id,
+        type: 'alert',
+        message: 'Daily limit reached! You have used all your hooks for today. Come back tomorrow or upgrade now.',
+      });
+    }
 
     return new Response(JSON.stringify({ hooks: insertedHooks || hooks }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
