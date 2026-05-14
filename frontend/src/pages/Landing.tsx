@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
@@ -20,15 +21,35 @@ import Button from '../components/ui/Button';
 export default function Landing() {
   const [demoInput, setDemoInput] = useState('');
   const [isDemoGenerating, setIsDemoGenerating] = useState(false);
-  const [demoResult, setDemoResult] = useState<string | null>(null);
+  const [demoResult, setDemoResult] = useState<{
+    hook: string;
+    viral_score: number;
+    trigger: string;
+  } | null>(null);
 
-  const handleDemoGenerate = () => {
-    if (!demoInput) return;
+  const handleDemoGenerate = async () => {
+    if (!demoInput || isDemoGenerating) return;
+    
     setIsDemoGenerating(true);
-    setTimeout(() => {
-      setDemoResult("I built a SaaS in 24 hours using AI. Here's exactly how I did it (and how you can too). 👇");
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-demo-hooks', {
+        body: { topic: demoInput }
+      });
+
+      if (error) throw error;
+      
+      setDemoResult(data);
+    } catch (err: any) {
+      console.error('Demo generation failed:', err);
+      // Fallback for demo if API fails
+      setDemoResult({
+        hook: `How I ${demoInput.toLowerCase()} using AI (it actually works).`,
+        viral_score: 8.5,
+        trigger: "Pattern Interrupt"
+      });
+    } finally {
       setIsDemoGenerating(false);
-    }, 1500);
+    }
   };
 
   const containerVariants = {
@@ -174,14 +195,14 @@ export default function Landing() {
                             </div>
                           </div>
                           <p className="text-xl md:text-2xl font-bold text-white leading-relaxed font-mono italic">
-                            "{demoResult}"
+                            "{demoResult.hook}"
                           </p>
                           <div className="flex items-center gap-3 pt-4 border-t border-white/10">
                             <div className="px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase">
-                              Viral Score: 9.8/10
+                              Viral Score: {demoResult.viral_score}/10
                             </div>
                             <div className="px-3 py-1 rounded-lg bg-primary/10 text-primary text-[10px] font-bold uppercase">
-                              Curiosity Trigger
+                              {demoResult.trigger} Trigger
                             </div>
                           </div>
                         </motion.div>
