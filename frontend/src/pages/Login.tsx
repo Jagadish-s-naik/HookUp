@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Github } from 'lucide-react';
+import { Sparkles, GitHub } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -114,7 +114,7 @@ export default function Login() {
               Google
             </Button>
             <Button variant="outline" className="w-full gap-2">
-              <Github className="w-4 h-4" />
+              <GitHub className="w-4 h-4" />
               GitHub
             </Button>
           </div>
