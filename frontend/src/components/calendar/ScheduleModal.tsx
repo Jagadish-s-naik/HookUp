@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar as CalendarIcon, Instagram, Youtube, Twitter, Share2, Loader2 } from 'lucide-react';
 import { useCalendarStore, ScheduledPost } from '../../store/calendarStore';
@@ -23,50 +23,38 @@ const PLATFORMS = [
   { id: 'linkedin', name: 'LinkedIn', icon: Share2, color: 'text-blue-700' },
 ];
 
-export default function ScheduleModal({ 
-  isOpen, 
+interface ContentProps extends ScheduleModalProps {
+  user: any;
+  addEntry: (entry: any) => Promise<void>;
+  updateEntry: (id: string, entry: any) => Promise<void>;
+  deleteEntry: (id: string) => Promise<void>;
+}
+
+function ScheduleModalContent({ 
   onClose, 
   selectedDate,
   initialTitle = '',
   initialContent = '',
   initialPlatform = 'instagram',
-  editingEntry
-}: ScheduleModalProps) {
-  const { user } = useAuthStore();
-  const { addEntry, updateEntry, deleteEntry } = useCalendarStore();
+  editingEntry,
+  user,
+  addEntry,
+  updateEntry,
+  deleteEntry
+}: ContentProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [formData, setFormData] = useState({
-    title: initialTitle,
-    content: initialContent,
-    platform: initialPlatform,
-    date: selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-    time: '12:00'
-  });
 
-  // Update form data when initial values or editingEntry change
-  useEffect(() => {
-    if (isOpen) {
-      if (editingEntry) {
-        const scheduledDate = new Date(editingEntry.scheduled_at);
-        setFormData({
-          title: editingEntry.title,
-          content: editingEntry.content || '',
-          platform: editingEntry.platform,
-          date: scheduledDate.toISOString().split('T')[0],
-          time: scheduledDate.toTimeString().split(' ')[0].substring(0, 5)
-        });
-      } else {
-        setFormData({
-          title: initialTitle,
-          content: initialContent,
-          platform: initialPlatform,
-          date: selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          time: '12:00'
-        });
-      }
-    }
-  }, [isOpen, initialTitle, initialContent, initialPlatform, selectedDate, editingEntry]);
+  // Initialize state directly from props/editingEntry
+  const scheduledDate = editingEntry ? new Date(editingEntry.scheduled_at) : null;
+  
+  const [formData, setFormData] = useState({
+    title: editingEntry?.title || initialTitle,
+    content: editingEntry?.content || initialContent || '',
+    platform: editingEntry?.platform || initialPlatform,
+    date: scheduledDate ? scheduledDate.toISOString().split('T')[0] : (selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]),
+    time: scheduledDate ? scheduledDate.toTimeString().split(' ')[0].substring(0, 5) : '12:00'
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,129 +105,145 @@ export default function ScheduleModal({
   };
 
   return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9, y: 20 }}
+      className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 z-[70] overflow-hidden"
+    >
+      <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
+        <div>
+          <h3 className="text-xl font-black tracking-tight">{editingEntry ? 'Edit Post' : 'Schedule Post'}</h3>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+            {editingEntry ? 'Update your content details' : 'Plan your next viral hit'}
+          </p>
+        </div>
+        <button 
+          onClick={onClose}
+          className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Platform</label>
+          <div className="grid grid-cols-5 gap-2">
+            {PLATFORMS.map((platform) => (
+              <button
+                key={platform.id}
+                type="button"
+                onClick={() => setFormData({ ...formData, platform: platform.id })}
+                className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${
+                  formData.platform === platform.id 
+                    ? 'border-primary bg-primary/5 ring-1 ring-primary' 
+                    : 'border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
+                }`}
+              >
+                <platform.icon className={`w-5 h-5 ${platform.color}`} />
+                <span className="text-[10px] font-bold">{platform.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Post Title</label>
+          <input
+            required
+            type="text"
+            placeholder="e.g. How I built HookUp"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary font-bold placeholder:text-slate-400"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date</label>
+            <input
+              required
+              type="date"
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary font-bold"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Time</label>
+            <input
+              required
+              type="time"
+              value={formData.time}
+              onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+              className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary font-bold"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Notes / Caption (Optional)</label>
+          <textarea
+            rows={3}
+            placeholder="Draft your content here..."
+            value={formData.content}
+            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+            className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary font-bold placeholder:text-slate-400 resize-none"
+          />
+        </div>
+
+        <div className="flex gap-3">
+          {editingEntry && (
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={handleDelete}
+              disabled={isSubmitting || isDeleting}
+              className="flex-1 py-4 rounded-2xl border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors gap-2"
+            >
+              {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : <X className="w-5 h-5" />}
+              Delete
+            </Button>
+          )}
+          <Button 
+            type="submit" 
+            disabled={isSubmitting || isDeleting}
+            className={`${editingEntry ? 'flex-[2]' : 'w-full'} py-4 rounded-2xl shadow-xl shadow-primary/20 gap-2`}
+          >
+            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CalendarIcon className="w-5 h-5" />}
+            {isSubmitting ? (editingEntry ? 'Updating...' : 'Scheduling...') : (editingEntry ? 'Update Post' : 'Schedule Post')}
+          </Button>
+        </div>
+      </form>
+    </motion.div>
+  );
+}
+
+export default function ScheduleModal(props: ScheduleModalProps) {
+  const { user } = useAuthStore();
+  const { addEntry, updateEntry, deleteEntry } = useCalendarStore();
+
+  return (
     <AnimatePresence>
-      {isOpen && (
+      {props.isOpen && (
         <>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={props.onClose}
             className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[60]"
           />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 z-[70] overflow-hidden"
-          >
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
-              <div>
-                <h3 className="text-xl font-black tracking-tight">{editingEntry ? 'Edit Post' : 'Schedule Post'}</h3>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                  {editingEntry ? 'Update your content details' : 'Plan your next viral hit'}
-                </p>
-              </div>
-              <button 
-                onClick={onClose}
-                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Platform</label>
-                <div className="grid grid-cols-5 gap-2">
-                  {PLATFORMS.map((platform) => (
-                    <button
-                      key={platform.id}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, platform: platform.id })}
-                      className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${
-                        formData.platform === platform.id 
-                          ? 'border-primary bg-primary/5 ring-1 ring-primary' 
-                          : 'border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
-                      }`}
-                    >
-                      <platform.icon className={`w-5 h-5 ${platform.color}`} />
-                      <span className="text-[10px] font-bold">{platform.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Post Title</label>
-                <input
-                  required
-                  type="text"
-                  placeholder="e.g. How I built HookUp"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary font-bold placeholder:text-slate-400"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date</label>
-                  <input
-                    required
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary font-bold"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Time</label>
-                  <input
-                    required
-                    type="time"
-                    value={formData.time}
-                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary font-bold"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Notes / Caption (Optional)</label>
-                <textarea
-                  rows={3}
-                  placeholder="Draft your content here..."
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary font-bold placeholder:text-slate-400 resize-none"
-                />
-              </div>
-
-              <div className="flex gap-3">
-                {editingEntry && (
-                  <Button 
-                    type="button" 
-                    variant="outline"
-                    onClick={handleDelete}
-                    disabled={isSubmitting || isDeleting}
-                    className="flex-1 py-4 rounded-2xl border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors gap-2"
-                  >
-                    {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : <X className="w-5 h-5" />}
-                    Delete
-                  </Button>
-                )}
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting || isDeleting}
-                  className={`${editingEntry ? 'flex-[2]' : 'w-full'} py-4 rounded-2xl shadow-xl shadow-primary/20 gap-2`}
-                >
-                  {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CalendarIcon className="w-5 h-5" />}
-                  {isSubmitting ? (editingEntry ? 'Updating...' : 'Scheduling...') : (editingEntry ? 'Update Post' : 'Schedule Post')}
-                </Button>
-              </div>
-            </form>
-          </motion.div>
+          <ScheduleModalContent 
+            {...props} 
+            key={props.editingEntry?.id || 'new'}
+            user={user}
+            addEntry={addEntry}
+            updateEntry={updateEntry}
+            deleteEntry={deleteEntry}
+          />
         </>
       )}
     </AnimatePresence>
