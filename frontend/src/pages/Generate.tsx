@@ -18,6 +18,7 @@ import {
   ThumbsUp,
   ThumbsDown
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
@@ -79,6 +80,7 @@ export default function Generate() {
   const { profile } = useAuthStore();
   const { isFree, canGenerate } = usePlan();
   const { openUpgradeModal } = useUIStore();
+  const navigate = useNavigate();
   
   const [platform, setPlatform] = useState('instagram');
   const [topic, setTopic] = useState('');
@@ -390,17 +392,22 @@ export default function Generate() {
             </AnimatePresence>
           </div>
         </div>
+        <button 
+          onClick={(e) => { e.stopPropagation(); onWriteCaption(); }}
+          className="p-2 rounded-lg text-primary hover:bg-primary/10 transition-all"
+          title="Write Caption"
+        >
+          <Sparkles className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
 }
 
 function HookCard({ 
-  hook, 
-  idx, 
-  onCopy, 
   onToggleSave,
   onRate,
+  onWriteCaption,
   isBlurred 
 }: { 
   hook: HookResult, 
@@ -408,6 +415,7 @@ function HookCard({
   onCopy: () => void, 
   onToggleSave: () => void,
   onRate: (rating: number) => void,
+  onWriteCaption: () => void,
   isBlurred?: boolean
 }) {
   const { openUpgradeModal } = useUIStore();
