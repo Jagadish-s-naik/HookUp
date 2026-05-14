@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar as CalendarIcon, Instagram, Youtube, Twitter, Share2, Loader2 } from 'lucide-react';
 import { useCalendarStore, ScheduledPost } from '../../store/calendarStore';
 import { useAuthStore } from '../../store/authStore';
+import type { User } from '@supabase/supabase-js';
 import Button from '../ui/Button';
 
 interface ScheduleModalProps {
@@ -24,9 +25,9 @@ const PLATFORMS = [
 ];
 
 interface ContentProps extends ScheduleModalProps {
-  user: any;
-  addEntry: (entry: any) => Promise<void>;
-  updateEntry: (id: string, entry: any) => Promise<void>;
+  user: User | null;
+  addEntry: (entry: Omit<ScheduledPost, 'id' | 'created_at' | 'status'>) => Promise<void>;
+  updateEntry: (id: string, entry: Partial<ScheduledPost>) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
 }
 
