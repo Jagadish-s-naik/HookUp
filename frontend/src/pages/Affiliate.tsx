@@ -314,8 +314,12 @@ export default function Affiliate() {
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Payouts are processed automatically every Friday via Razorpay Payouts. Minimum withdrawal amount is ₹500.
                 </p>
-                <Button className="w-full h-12 bg-white text-slate-900 hover:bg-slate-100 border-none shadow-none mt-4 font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled={stats.earnings < 500}>
-                  Request Payout
+                <Button 
+                  onClick={handleRequestPayout}
+                  disabled={stats.earnings < 500 || requestingPayout}
+                  className="w-full h-12 bg-white text-slate-900 hover:bg-slate-100 border-none shadow-none mt-4 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {requestingPayout ? 'Processing...' : 'Request Payout'}
                 </Button>
               </div>
             </div>
