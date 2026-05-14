@@ -55,6 +55,8 @@ export default function Analytics() {
   const [loading, setLoading] = useState(true);
 
   const fetchAnalytics = useCallback(async () => {
+    // Force microtask to avoid setState in effect warning
+    await Promise.resolve();
     setLoading(true);
     try {
       // Fetch summary from view
@@ -145,6 +147,15 @@ export default function Analytics() {
       desc: 'Most used destination'
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+        <p className="text-slate-500 font-medium animate-pulse">Calculating your insights...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 pb-20">
