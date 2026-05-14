@@ -391,20 +391,15 @@ export default function Generate() {
               )}
             </AnimatePresence>
           </div>
-        </div>
-        <button 
-          onClick={(e) => { e.stopPropagation(); onWriteCaption(); }}
-          className="p-2 rounded-lg text-primary hover:bg-primary/10 transition-all"
-          title="Write Caption"
-        >
-          <Sparkles className="w-4 h-4" />
-        </button>
       </div>
     </div>
   );
 }
 
 function HookCard({ 
+  hook, 
+  idx, 
+  onCopy, 
   onToggleSave,
   onRate,
   onWriteCaption,
@@ -492,6 +487,13 @@ function HookCard({
             </button>
           </div>
         </div>
+        <button 
+          onClick={(e) => { e.stopPropagation(); onWriteCaption(); }}
+          className="p-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all"
+          title="Write Caption"
+        >
+          <Sparkles className="w-4 h-4" />
+        </button>
         <button 
           onClick={(e) => { e.stopPropagation(); onCopy(); }}
           className="flex-1 flex items-center justify-center gap-2 text-xs font-bold text-white bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 py-2.5 rounded-xl transition-all shadow-lg shadow-primary/10"
