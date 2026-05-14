@@ -1,16 +1,3 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Sparkles, Library, BarChart3, User, Settings, LogOut, Gift } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
-import toast from 'react-hot-toast';
-
-const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-  { icon: Sparkles, label: 'Generate', path: '/generate' },
-  { icon: Library, label: 'Library', path: '/library' },
-  { icon: BarChart3, label: 'Analytics', path: '/analytics' },
-  { icon: Gift, label: 'Affiliate', path: '/affiliate' },
-  { icon: User, label: 'Account', path: '/account' },
-];
 
 export default function Sidebar() {
   const location = useLocation();

@@ -21,6 +21,7 @@ import Onboarding from './pages/Onboarding';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import Affiliate from './pages/Affiliate';
+import Calendar from './pages/Calendar';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -99,6 +100,7 @@ function App() {
               <Route path="/library" element={<Library />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/calendar" element={<Calendar />} />
               
               <Route path="/payment/success" element={<PaymentSuccess />} />
               <Route path="/payment/failed" element={<PaymentFailed />} />
