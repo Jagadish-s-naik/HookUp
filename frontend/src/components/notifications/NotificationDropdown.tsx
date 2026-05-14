@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Info, AlertCircle, Zap, TrendingUp } from 'lucide-react';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../lib/supabase';
 import { formatDistanceToNow } from 'date-fns';
+
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,25 +24,24 @@ export default function NotificationDropdown() {
       fetchNotifications(user.id);
       
       // Real-time subscription for new notifications
-      const channel = import('../../lib/supabase').then(({ supabase }) => 
-        supabase
-          .channel('public:notifications')
-          .on('postgres_changes', { 
-            event: 'INSERT', 
-            schema: 'public', 
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`
-          }, () => {
-            fetchNotifications(user.id);
-          })
-          .subscribe()
-      );
+      const channel = supabase
+        .channel(`public:notifications:${user.id}`)
+        .on('postgres_changes', { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        }, () => {
+          fetchNotifications(user.id);
+        })
+        .subscribe();
 
       return () => {
-        channel.then(c => c.unsubscribe());
+        supabase.removeChannel(channel);
       };
     }
   }, [user?.id, fetchNotifications]);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
