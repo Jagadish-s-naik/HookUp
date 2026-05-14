@@ -35,9 +35,10 @@ const PLATFORM_COLORS: Record<string, string> = {
 
 interface ContentCalendarProps {
   onAddEntry?: (date: Date) => void;
+  onEditEntry?: (entry: any) => void;
 }
 
-export default function ContentCalendar({ onAddEntry }: ContentCalendarProps) {
+export default function ContentCalendar({ onAddEntry, onEditEntry }: ContentCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { user } = useAuthStore();
