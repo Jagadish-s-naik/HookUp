@@ -1,0 +1,78 @@
+import { create } from 'zustand';
+import { supabase } from '../lib/supabase';
+
+export interface ScheduledPost {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string | null;
+  platform: string;
+  scheduled_at: string;
+  status: string;
+  created_at: string;
+}
+
+interface CalendarState {
+  entries: ScheduledPost[];
+  isLoading: boolean;
+  fetchEntries: (userId: string) => Promise<void>;
+  addEntry: (entry: Omit<ScheduledPost, 'id' | 'created_at' | 'status'>) => Promise<void>;
+  deleteEntry: (id: string) => Promise<void>;
+}
+
+export const useCalendarStore = create<CalendarState>((set, get) => ({
+  entries: [],
+  isLoading: false,
+
+  fetchEntries: async (userId: string) => {
+    set({ isLoading: true });
+    try {
+      const { data, error } = await supabase
+        .from('scheduled_posts')
+        .select('*')
+        .eq('user_id', userId)
+        .order('scheduled_at', { ascending: true });
+
+      if (error) throw error;
+      set({ entries: data || [] });
+    } catch (error) {
+      console.error('Error fetching calendar entries:', error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  addEntry: async (entry) => {
+    try {
+      const { data, error } = await supabase
+        .from('scheduled_posts')
+        .insert([entry])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      const { entries } = get();
+      set({ entries: [...entries, data] });
+    } catch (error) {
+      console.error('Error adding calendar entry:', error);
+      throw error;
+    }
+  },
+
+  deleteEntry: async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('scheduled_posts')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      const { entries } = get();
+      set({ entries: entries.filter(e => e.id !== id) });
+    } catch (error) {
+      console.error('Error deleting calendar entry:', error);
+    }
+  }
+}));
