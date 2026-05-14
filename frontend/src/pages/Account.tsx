@@ -21,7 +21,7 @@ import { toast } from 'react-hot-toast';
 
 export default function Account() {
   const { profile, setProfile, signOut } = useAuthStore();
-  const { plan, limits, usage, remainingToday } = usePlan();
+  const { plan, limits, usage } = usePlan();
   
   const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState({
@@ -52,8 +52,8 @@ export default function Account() {
         ...formData
       });
       toast.success('Profile updated successfully!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update profile');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update profile');
     } finally {
       setIsUpdating(false);
     }

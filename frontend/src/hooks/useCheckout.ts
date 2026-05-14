@@ -46,7 +46,7 @@ export function useCheckout() {
 
       // Open Razorpay Checkout
       return new Promise((resolve, reject) => {
-        const options = {
+        const options: RazorpayOptions = {
           key: data.razorpay_key_id,
           subscription_id: data.subscription_id,
           name: 'HookAI',
@@ -73,9 +73,9 @@ export function useCheckout() {
 
         openRazorpayCheckout(options);
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Checkout error:', error);
-      toast.error(error.message || 'Something went wrong');
+      toast.error(error instanceof Error ? error.message : 'Something went wrong');
       throw error;
     } finally {
       setIsLoading(false);
