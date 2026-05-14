@@ -102,6 +102,13 @@ serve(async (req) => {
             type: 'subscription',
           })
         }
+
+        // Trigger Notification
+        await supabaseClient.from('notifications').insert({
+          user_id: userId,
+          type: 'premium_unlock',
+          message: `Welcome to the ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan! Your premium features are now unlocked.`,
+        });
         break;
 
       case 'subscription.cancelled':
