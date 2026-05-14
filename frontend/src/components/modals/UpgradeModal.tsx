@@ -4,138 +4,20 @@ import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { loadRazorpayScript, openRazorpayCheckout } from '../../lib/razorpay';
-import Button from '../ui/Button';
-import toast from 'react-hot-toast';
-import { useState, useEffect } from 'react';
+import { useCheckout } from '../../hooks/useCheckout';
 
-const plans = [
-  {
-    name: 'Free',
-    price: '₹0',
-    description: 'Perfect for getting started',
-    features: [
-      '5 hooks per day',
-      '1 platform at a time',
-      'Basic analytics',
-      'Standard AI model'
-    ],
-    buttonText: 'Current Plan',
-    buttonVariant: 'outline' as const,
-    disabled: true,
-  },
-  {
-    name: 'Starter',
-    price: '₹499',
-    period: '/month',
-    description: 'For growing creators',
-    features: [
-      '100 hooks per month',
-      '3 platforms at a time',
-      'Advanced analytics',
-      '7-day content calendar',
-      'Priority support'
-    ],
-    buttonText: 'Upgrade to Starter',
-    buttonVariant: 'primary' as const,
-    popular: true,
-    icon: Zap,
-  },
-  {
-    name: 'Pro',
-    price: '₹1,299',
-    period: '/month',
-    description: 'For serious influencers',
-    features: [
-      'Unlimited hooks',
-      'All platforms',
-      'Full 30-day calendar',
-      'Brand Voice AI',
-      'Repurpose Engine',
-      'Early access features'
-    ],
-    buttonText: 'Upgrade to Pro',
-    buttonVariant: 'primary' as const,
-    icon: Rocket,
-  }
-];
-
-export default function UpgradeModal() {
-  const { isUpgradeModalOpen, upgradeReason, closeUpgradeModal } = useUIStore();
-  const { user } = useAuthStore();
-  const navigate = useNavigate();
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isUpgradeModalOpen) {
-      loadRazorpayScript().then((success) => {
-        if (!success) {
-          toast.error("Failed to load payment gateway. Please check your connection.");
-        }
-      });
-    }
-  }, [isUpgradeModalOpen]);
+// ... inside component
+  const { startCheckout, isLoading: isCheckoutLoading } = useCheckout();
 
   const handleUpgrade = async (plan: string) => {
-    if (!user) {
-      toast.error("Please login to upgrade");
-      return;
-    }
-
-    setLoadingPlan(plan);
     try {
-      const { data: session } = await supabase.auth.getSession();
-      
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/razorpay-checkout`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.session?.access_token}`,
-          },
-          body: JSON.stringify({
-            plan: plan.toLowerCase(),
-            billing_cycle: 'monthly', // Default to monthly for now
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to initialize checkout');
-      }
-
-      const options = {
-        key: data.razorpay_key_id,
-        subscription_id: data.subscription_id,
-        name: 'HookAI',
-        description: `${plan} Subscription`,
-        image: '/logo.png', // Add your logo path
-        prefill: data.prefill,
-        theme: {
-          color: '#7C3AED', // primary color
-        },
-        handler: async (_response: any) => {
-          toast.success("Payment successful!");
-          closeUpgradeModal();
-          navigate('/payment/success');
-        },
-        modal: {
-          ondismiss: () => {
-            setLoadingPlan(null);
-          },
-        },
-      };
-
-      openRazorpayCheckout(options);
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast.error(error.message || "Something went wrong. Please try again.");
-      setLoadingPlan(null);
+      await startCheckout(plan);
+      closeUpgradeModal();
+    } catch (error) {
+      // Error is already handled in the hook's toast
     }
   };
+
 
   if (!isUpgradeModalOpen) return null;
 
