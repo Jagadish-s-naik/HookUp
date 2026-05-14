@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Sparkles, Library, BarChart3, User, Settings, LogOut, Gift } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
 
 const menuItems = [
@@ -23,7 +22,7 @@ export default function Sidebar() {
       await storeSignOut();
       toast.success('Logged out successfully');
       navigate('/login');
-    } catch (error) {
+    } catch {
       toast.error('Failed to logout');
     }
   };
