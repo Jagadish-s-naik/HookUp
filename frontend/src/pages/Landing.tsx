@@ -372,7 +372,7 @@ export default function Landing() {
                   Get Started for Free
                 </Button>
               </Link>
-            </div>
+            </motion.div>
           </div>
         </section>
       </main>

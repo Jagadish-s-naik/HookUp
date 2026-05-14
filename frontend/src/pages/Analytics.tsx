@@ -112,9 +112,13 @@ export default function Analytics() {
   }, [user]);
 
   useEffect(() => {
-    if (user) {
-      fetchAnalytics();
-    }
+    const triggerFetch = async () => {
+      if (user) {
+        await Promise.resolve();
+        fetchAnalytics();
+      }
+    };
+    triggerFetch();
   }, [user, fetchAnalytics]);
 
   const metrics = [
