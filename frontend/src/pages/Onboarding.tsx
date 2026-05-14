@@ -12,7 +12,12 @@ import {
   Palette,
   CheckCircle2,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  User,
+  CreditCard,
+  Zap,
+  ShieldCheck,
+  Crown
 } from 'lucide-react';
 import { useOnboardingStore } from '../store/onboardingStore';
 import { useAuthStore } from '../store/authStore';
@@ -44,6 +49,37 @@ const goals = [
   { id: 'sales', label: 'Boost Sales', description: 'Convert your audience into paying customers.' },
 ];
 
+const plans = [
+  { 
+    id: 'free', 
+    label: 'Free Forever', 
+    price: '₹0', 
+    description: 'Basic hook generation for beginners',
+    features: ['5 hooks per day', '1 platform', 'Standard AI model'],
+    icon: Zap,
+    color: 'text-slate-500'
+  },
+  { 
+    id: 'starter', 
+    label: 'Starter', 
+    price: '₹499', 
+    description: 'Perfect for consistent creators',
+    features: ['20 hooks per day', '3 platforms', 'Advanced AI model', 'Calendar access'],
+    icon: ShieldCheck,
+    color: 'text-blue-500',
+    popular: true
+  },
+  { 
+    id: 'pro', 
+    label: 'Pro', 
+    price: '₹999', 
+    description: 'For serious personal brands',
+    features: ['100 hooks per day', 'All platforms', 'Priority generation', 'Brand Voice AI'],
+    icon: Crown,
+    color: 'text-purple-500'
+  },
+];
+
 export default function Onboarding() {
   const { step, setStep, data, updateData } = useOnboardingStore();
   const { user } = useAuthStore();
@@ -62,9 +98,11 @@ export default function Onboarding() {
       const { error } = await supabase
         .from('users')
         .update({
+          name: data.name,
           niche: data.niche,
           platforms: data.platforms,
           goal: data.goal,
+          plan: data.plan,
           onboarding_complete: true,
         })
         .eq('id', user.id);
@@ -93,14 +131,14 @@ export default function Onboarding() {
         {/* Progress bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-slate-500">Step {step} of 3</span>
-            <span className="text-sm font-bold text-primary">{Math.round((step / 3) * 100)}% Complete</span>
+            <span className="text-sm font-medium text-slate-500">Step {step} of 5</span>
+            <span className="text-sm font-bold text-primary">{Math.round((step / 5) * 100)}% Complete</span>
           </div>
           <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
             <motion.div 
               className="h-full bg-primary"
               initial={{ width: 0 }}
-              animate={{ width: `${(step / 3) * 100}%` }}
+              animate={{ width: `${(step / 5) * 100}%` }}
               transition={{ duration: 0.5 }}
             />
           </div>
