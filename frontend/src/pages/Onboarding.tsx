@@ -14,7 +14,6 @@ import {
   ChevronRight,
   ChevronLeft,
   User,
-  CreditCard,
   Zap,
   ShieldCheck,
   Crown
@@ -83,7 +82,7 @@ const plans = [
 
 export default function Onboarding() {
   const { step, setStep, data, updateData } = useOnboardingStore();
-  const { user, profile, setProfile } = useAuthStore();
+  const { user, setProfile } = useAuthStore();
   const { startCheckout, isLoading: isPaymentLoading } = useCheckout();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -120,7 +119,7 @@ export default function Onboarding() {
         try {
           await startCheckout(data.plan);
           // startCheckout will navigate to success page on success
-        } catch (paymentError) {
+        } catch {
           // If payment failed/cancelled, we still saved their free profile
           // But maybe they want to try again or just go to dashboard on free
           toast.error("Payment was not completed. You have been started on the Free plan.");
