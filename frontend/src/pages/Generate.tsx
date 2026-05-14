@@ -364,6 +364,13 @@ export default function Generate() {
                       onCopy={() => isBlurred ? openUpgradeModal('blurred_hooks') : copyToClipboard(hook.hook_text)} 
                       onToggleSave={() => isBlurred ? openUpgradeModal('blurred_hooks') : toggleSave(hook.id, hook.is_saved)}
                       onRate={(rating) => isBlurred ? openUpgradeModal('blurred_hooks') : handleRate(hook.id, rating)}
+                      onWriteCaption={() => {
+                        if (isBlurred) {
+                          openUpgradeModal('blurred_hooks');
+                        } else {
+                          navigate('/captions', { state: { hookText: hook.hook_text } });
+                        }
+                      }}
                     />
                   );
                 })
