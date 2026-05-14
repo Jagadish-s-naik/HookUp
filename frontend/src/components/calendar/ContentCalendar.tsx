@@ -168,6 +168,10 @@ export default function ContentCalendar({ onAddEntry, onEditEntry }: ContentCale
                   return (
                     <div 
                       key={entry.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditEntry?.(entry);
+                      }}
                       className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:shadow-md transition-all group/item relative overflow-hidden"
                     >
                       <div className={`w-5 h-5 flex-shrink-0 rounded-md ${PLATFORM_COLORS[entry.platform]} flex items-center justify-center shadow-sm`}>
