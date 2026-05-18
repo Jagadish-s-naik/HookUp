@@ -32,13 +32,7 @@ interface GeneratedCaption {
 
 export default function CaptionWriter() {
   const location = useLocation();
-  const [topic, setTopic] = useState('');
-  
-  useEffect(() => {
-    if (location.state?.hookText) {
-      setTopic(location.state.hookText);
-    }
-  }, [location.state]);
+  const [topic, setTopic] = useState(location.state?.hookText || '');
 
   const [selectedPlatform, setSelectedPlatform] = useState('instagram');
   const [selectedTone, setSelectedTone] = useState('Professional');
