@@ -47,11 +47,18 @@ interface PlatformDistribution {
   value: number;
 }
 
+interface TriggerStats {
+  name: string;
+  count: number;
+  avg_score: number;
+}
+
 export default function Analytics() {
   const { user } = useAuthStore();
   const [stats, setStats] = useState<AnalyticsData | null>(null);
   const [dailyData, setDailyData] = useState<DailyData[]>([]);
   const [platformData, setPlatformData] = useState<PlatformDistribution[]>([]);
+  const [triggerData, setTriggerData] = useState<TriggerStats[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAnalytics = useCallback(async () => {
@@ -84,10 +91,10 @@ export default function Analytics() {
       })) || [];
       setDailyData(formattedDaily);
 
-      // Fetch platform distribution
+      // Fetch platform and trigger distribution
       const { data: hooks, error: hooksError } = await supabase
         .from('hooks')
-        .select('platform')
+        .select('platform, psychological_trigger, viral_score')
         .eq('user_id', user?.id);
 
       if (hooksError) throw hooksError;
@@ -102,6 +109,25 @@ export default function Analytics() {
         value: platformCounts[key]
       }));
       setPlatformData(formattedPlatforms);
+
+      const triggerStatsMap = hooks?.reduce((acc: Record<string, { count: number, totalScore: number }>, h: { psychological_trigger: string, viral_score: number }) => {
+        if (h.psychological_trigger) {
+          if (!acc[h.psychological_trigger]) {
+            acc[h.psychological_trigger] = { count: 0, totalScore: 0 };
+          }
+          acc[h.psychological_trigger].count += 1;
+          acc[h.psychological_trigger].totalScore += (h.viral_score || 0);
+        }
+        return acc;
+      }, {});
+
+      const formattedTriggers = Object.keys(triggerStatsMap || {}).map(key => ({
+        name: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        count: triggerStatsMap[key].count,
+        avg_score: triggerStatsMap[key].totalScore / triggerStatsMap[key].count
+      })).sort((a, b) => b.avg_score - a.avg_score).slice(0, 3);
+      
+      setTriggerData(formattedTriggers);
 
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -286,7 +312,7 @@ export default function Analytics() {
         </div>
       </div>
 
-      {/* Bottom Row - Psychological Triggers (Mocked for now as we don't have a view for it yet) */}
+      {/* Bottom Row - Psychological Triggers */}
       <div className="glass p-8 rounded-3xl border-slate-100 dark:border-slate-800 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
           <Sparkles className="w-32 h-32 text-primary" />
@@ -294,12 +320,20 @@ export default function Analytics() {
         <div className="relative z-10 space-y-6">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">AI Content Insight</h3>
           <p className="text-slate-500 max-w-2xl leading-relaxed">
-            Based on your recent generations, hooks using <span className="text-primary font-bold">Curiosity Gap</span> and <span className="text-primary font-bold">Social Proof</span> have the highest estimated viral potential for your <span className="text-slate-900 dark:text-white font-bold">{stats?.top_platform || 'Instagram'}</span> audience. 
-            Try leaning more into contrarian statements to boost your average score.
+            Based on your recent generations, hooks using the following psychological triggers have the highest estimated viral potential for your audience. 
+            Try leaning more into these statements to boost your average score.
           </p>
-          <div className="flex items-center gap-4">
-            <div className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest">Contrarian +15%</div>
-            <div className="px-4 py-2 rounded-xl bg-orange-500/10 text-orange-500 text-xs font-bold uppercase tracking-widest">Curiosity +12%</div>
+          <div className="flex flex-wrap items-center gap-4">
+            {triggerData.length > 0 ? (
+              triggerData.map((t, idx) => (
+                <div key={idx} className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                  {t.name}
+                  <span className="bg-primary text-white px-1.5 py-0.5 rounded-md text-[10px]">{t.avg_score.toFixed(1)}/10</span>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-slate-400 italic">Generate more hooks to unlock personalized insights.</div>
+            )}
           </div>
         </div>
       </div>
