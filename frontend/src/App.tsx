@@ -126,5 +126,6 @@ function App() {
       <UpgradeModal />
     </QueryClientProvider>
   );
+}
 
 export default App;
