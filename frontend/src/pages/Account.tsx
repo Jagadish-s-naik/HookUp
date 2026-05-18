@@ -28,6 +28,7 @@ export default function Account() {
     name: profile?.name || '',
     niche: profile?.niche || '',
     goal: profile?.goal || '',
+    brand_voice_summary: profile?.brand_voice_summary || '',
   });
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -42,6 +43,7 @@ export default function Account() {
           name: formData.name,
           niche: formData.niche,
           goal: formData.goal,
+          brand_voice_summary: formData.brand_voice_summary,
         })
         .eq('id', profile.id);
 
@@ -184,6 +186,48 @@ export default function Account() {
                       />
                     </div>
                   </div>
+                </div>
+
+                <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-primary" />
+                      Brand Voice Profile
+                    </label>
+                    {!limits.hasBrandVoice && (
+                      <span className="text-[10px] font-bold px-2 py-1 bg-amber-500/10 text-amber-500 rounded-lg uppercase tracking-wider">
+                        Premium Feature
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="relative">
+                    <textarea 
+                      rows={3}
+                      value={formData.brand_voice_summary}
+                      onChange={(e) => setFormData(prev => ({ ...prev, brand_voice_summary: e.target.value }))}
+                      disabled={!limits.hasBrandVoice}
+                      className={`w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none transition-all resize-none text-sm ${
+                        !limits.hasBrandVoice 
+                          ? 'opacity-60 cursor-not-allowed bg-slate-50 dark:bg-slate-950 blur-[1px]' 
+                          : 'focus:ring-2 focus:ring-primary/20 focus:border-primary'
+                      }`}
+                      placeholder="Describe your brand voice (e.g. Sarcastic tech bro, highly opinionated, uses emojis...)"
+                    />
+                    {!limits.hasBrandVoice && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <button 
+                          type="button"
+                          className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-xs font-bold shadow-xl"
+                        >
+                          Upgrade to Unlock
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Our AI will use this profile to match your exact tone when generating hooks and captions.
+                  </p>
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
