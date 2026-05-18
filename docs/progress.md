@@ -56,14 +56,14 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
 ---
 
 ## 📋 Backlog (Future Features)
-- [ ] **Premium Feature Activation**
-    - [ ] Implement Brand Voice personalization logic.
-    - [ ] Build the Content Calendar dashboard.
+- [x] **Premium Feature Activation**
+    - [x] Implement Brand Voice personalization logic.
+    - [x] Build the Content Calendar dashboard.
 - [ ] **Analytics & Reporting**
     - [ ] Detailed performance metrics for generated hooks.
-- [ ] **Affiliate Backend**
-    - [ ] Secure payout request processing logic.
-    - [ ] Automated commission calculation triggers.
+- [x] **Affiliate Backend**
+    - [x] Secure payout request processing logic.
+    - [x] Automated commission calculation triggers.
 
 ---
 
