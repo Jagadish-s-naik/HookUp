@@ -121,9 +121,9 @@ function App() {
             </Route>
           </Route>
         </Routes>
+        <Toaster position="bottom-right" />
+        <UpgradeModal />
       </Router>
-      <Toaster position="bottom-right" />
-      <UpgradeModal />
     </QueryClientProvider>
   );
 }
