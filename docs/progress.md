@@ -49,9 +49,9 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
 - [ ] **Notification System**
     - [ ] Real-time notification center (Supabase Realtime).
     - [ ] Functional dropdown in `TopBar.tsx`.
-- [ ] **Content Calendar Dashboard**
-    - [ ] Visual grid view for the calendar.
-    - [ ] Status tracking (Draft, Pending, Approved).
+- [x] **Content Calendar Dashboard**
+    - [x] Visual grid view for the calendar.
+    - [x] Status tracking (Draft, Pending, Approved) & statistics dashboard.
 
 ---
 

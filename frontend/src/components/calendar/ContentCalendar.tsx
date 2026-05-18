@@ -45,9 +45,10 @@ const STATUS_COLORS: Record<string, string> = {
 interface ContentCalendarProps {
   onAddEntry?: (date: Date) => void;
   onEditEntry?: (entry: ScheduledPost) => void;
+  statusFilter?: string;
 }
 
-export default function ContentCalendar({ onAddEntry, onEditEntry }: ContentCalendarProps) {
+export default function ContentCalendar({ onAddEntry, onEditEntry, statusFilter = 'all' }: ContentCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { user } = useAuthStore();
@@ -139,7 +140,11 @@ export default function ContentCalendar({ onAddEntry, onEditEntry }: ContentCale
       {/* Calendar Grid */}
       <div className="grid grid-cols-7">
         {calendarDays.map((day) => {
-          const dayEntries = entries.filter(entry => isSameDay(parseISO(entry.scheduled_at), day));
+          let dayEntries = entries.filter(entry => isSameDay(parseISO(entry.scheduled_at), day));
+          if (statusFilter !== 'all') {
+            dayEntries = dayEntries.filter(entry => entry.status === statusFilter);
+          }
+          
           const isCurrentMonth = isSameMonth(day, monthStart);
           const isToday = isSameDay(day, new Date());
           const isSelected = isSameDay(day, selectedDate);
