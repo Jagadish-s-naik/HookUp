@@ -1,10 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 import './index.css'
 import App from './App.tsx'
 
-function Fallback({ error }: { error: Error }) {
+function Fallback({ error }: FallbackProps) {
   return (
     <div role="alert" style={{ padding: '2rem', color: 'red' }}>
       <p>Something went wrong:</p>
