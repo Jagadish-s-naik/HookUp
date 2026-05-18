@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Filter, CalendarClock, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Plus, CalendarClock, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import Button from '../components/ui/Button';
 import ContentCalendar from '../components/calendar/ContentCalendar';
 import ScheduleModal from '../components/calendar/ScheduleModal';
