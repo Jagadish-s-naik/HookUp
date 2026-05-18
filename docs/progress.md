@@ -40,12 +40,12 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
 ---
 
 ## 🏗️ In Progress
-- [ ] **Payment Security & Synchronization**
-    - [ ] Implement backend webhook listener for `subscription.activated`.
-    - [ ] Secure server-side payment verification for `razorpay_subscription_id`.
-    - [ ] Replace development mock Plan IDs with production IDs.
-- [ ] **State Management Polish**
-    - [ ] Real-time invalidation for `usePlan` hook after successful upgrade.
+- [x] **Payment Security & Synchronization**
+    - [x] Implement backend webhook listener for `subscription.activated`.
+    - [x] Secure server-side payment verification for `razorpay_subscription_id`.
+    - [x] Replace development mock Plan IDs with production IDs.
+- [x] **State Management Polish**
+    - [x] Real-time invalidation for `usePlan` hook after successful upgrade.
 - [ ] **Notification System**
     - [ ] Real-time notification center (Supabase Realtime).
     - [ ] Functional dropdown in `TopBar.tsx`.
