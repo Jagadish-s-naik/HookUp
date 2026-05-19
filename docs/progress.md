@@ -46,9 +46,9 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
     - [x] Replace development mock Plan IDs with production IDs.
 - [x] **State Management Polish**
     - [x] Real-time invalidation for `usePlan` hook after successful upgrade.
-- [ ] **Notification System**
-    - [ ] Real-time notification center (Supabase Realtime).
-    - [ ] Functional dropdown in `TopBar.tsx`.
+- [x] **Notification System**
+    - [x] Real-time notification center (Supabase Realtime).
+    - [x] Functional dropdown in `TopBar.tsx`.
 - [x] **Content Calendar Dashboard**
     - [x] Visual grid view for the calendar.
     - [x] Status tracking (Draft, Pending, Approved) & statistics dashboard.

@@ -114,6 +114,13 @@ export default function Onboarding() {
 
       if (error) throw error;
 
+      // Add a welcome notification
+      await supabase.from('notifications').insert({
+        user_id: user.id,
+        type: 'welcome',
+        message: 'Welcome to HookAI! Let\'s generate your first viral hook.',
+      });
+
       // If it's a paid plan, trigger checkout
       if (data.plan !== 'free') {
         try {
