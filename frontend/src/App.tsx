@@ -23,6 +23,7 @@ import PaymentFailed from './pages/PaymentFailed';
 import Affiliate from './pages/Affiliate';
 import Calendar from './pages/Calendar';
 import CaptionWriter from './pages/CaptionWriter';
+import Repurpose from './pages/Repurpose';
 
 import { GlobalErrorBoundary } from './components/ui/GlobalErrorBoundary';
 
@@ -111,6 +112,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/generate" element={<Generate />} />
                 <Route path="/captions" element={<CaptionWriter />} />
+                <Route path="/repurpose" element={<Repurpose />} />
                 <Route path="/library" element={<Library />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/account" element={<Account />} />

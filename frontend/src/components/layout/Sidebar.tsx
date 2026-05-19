@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Sparkles, Library, BarChart3, Settings, LogOut, Gift, Calendar, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Sparkles, Library, BarChart3, Settings, LogOut, Gift, Calendar, MessageSquare, Repeat } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 
@@ -7,6 +7,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Sparkles, label: 'Generate Hooks', path: '/generate' },
   { icon: MessageSquare, label: 'Caption Writer', path: '/captions' },
+  { icon: Repeat, label: 'Repurpose Engine', path: '/repurpose' },
   { icon: Calendar, label: 'Content Calendar', path: '/calendar' },
   { icon: Library, label: 'Library', path: '/library' },
   { icon: BarChart3, label: 'Analytics', path: '/analytics' },
