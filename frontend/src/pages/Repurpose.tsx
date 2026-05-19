@@ -140,7 +140,7 @@ export default function Repurpose() {
                       : 'border-slate-100 dark:border-slate-800 text-slate-500 hover:border-slate-200 dark:hover:border-slate-700'
                   }`}
                 >
-                  <Youtube className="w-5 h-5" />
+                  <Video className="w-5 h-5" />
                   <span className="text-[10px] font-bold uppercase tracking-wider">YouTube</span>
                 </button>
                 <button
