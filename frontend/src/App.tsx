@@ -24,6 +24,8 @@ import Affiliate from './pages/Affiliate';
 import Calendar from './pages/Calendar';
 import CaptionWriter from './pages/CaptionWriter';
 
+import { GlobalErrorBoundary } from './components/ui/GlobalErrorBoundary';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -91,41 +93,44 @@ function App() {
   }, [setUser, setProfile, setLoading]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+    <GlobalErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
-          {/* Protected Routes (Authenticated) */}
-          <Route element={<ProtectedRoute />}>
-            {/* Onboarding doesn't use the standard sidebar layout */}
-            <Route path="/onboarding" element={<Onboarding />} />
-            
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/generate" element={<Generate />} />
-              <Route path="/captions" element={<CaptionWriter />} />
-              <Route path="/library" element={<Library />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/calendar" element={<Calendar />} />
+            {/* Protected Routes (Authenticated) */}
+            <Route element={<ProtectedRoute />}>
+              {/* Onboarding doesn't use the standard sidebar layout */}
+              <Route path="/onboarding" element={<Onboarding />} />
               
-              <Route path="/payment/success" element={<PaymentSuccess />} />
-              <Route path="/payment/failed" element={<PaymentFailed />} />
-              <Route path="/affiliate" element={<Affiliate />} />
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/generate" element={<Generate />} />
+                <Route path="/captions" element={<CaptionWriter />} />
+                <Route path="/library" element={<Library />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/calendar" element={<Calendar />} />
+                
+                <Route path="/payment/success" element={<PaymentSuccess />} />
+                <Route path="/payment/failed" element={<PaymentFailed />} />
+                <Route path="/affiliate" element={<Affiliate />} />
 
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
-        <Toaster position="bottom-right" />
-        <UpgradeModal />
-      </Router>
-    </QueryClientProvider>
+          </Routes>
+          <Toaster position="bottom-right" />
+          <UpgradeModal />
+        </Router>
+      </QueryClientProvider>
+    </GlobalErrorBoundary>
   );
 }
 
 export default App;
+
