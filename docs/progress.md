@@ -64,9 +64,16 @@ HookUp is a premium SaaS platform for generating high-converting social media ho
 - [x] **Affiliate Backend**
     - [x] Secure payout request processing logic.
     - [x] Automated commission calculation triggers.
+- [ ] **Caption Writer**
+    - [x] Frontend UI and Edge Function logic implemented.
+- [ ] **Repurpose Engine (Phase 3)**
+    - [ ] UI for pasting content (YouTube URL, blog post, or long text).
+    - [ ] AI processing to extract core messages.
+    - [ ] Generation of 3-5 platform-specific hooks and captions from source.
 
 ---
 
-## 🐞 Known Issues
-- [ ] Checkout page might require a hard refresh to see updated plan status in some edge cases.
-- [ ] Mobile responsiveness check for the new Account dashboard.
+## ✅ Resolved Issues
+- [x] Checkout page plan status sync (Implemented polling for robust webhook synchronization).
+- [x] Mobile responsiveness for the new Account dashboard.
+- [x] Application stability (Implemented global error boundaries).
