@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Repeat, 
   Wand2, 
-  Youtube, 
+  Video, 
   FileText, 
   Globe, 
   Lock, 
