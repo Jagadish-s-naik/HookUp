@@ -58,15 +58,30 @@ export function useCheckout() {
             color: '#7C3AED',
           },
           handler: async (response: RazorpayResponse) => {
-            // Wait for a short delay to allow webhook to process (optional but safer)
-            await new Promise(r => setTimeout(r, 2000));
+            const loadingToastId = toast.loading("Verifying payment...");
             
-            // Refresh profile to show new plan
-            await useAuthStore.getState().refreshProfile();
-            
-            toast.success("Payment successful!");
-            navigate('/payment/success');
-            resolve(response);
+            try {
+              const targetPlan = plan.toLowerCase();
+              let attempts = 0;
+              const maxAttempts = 5; // 10 seconds max
+              
+              while (attempts < maxAttempts) {
+                await new Promise(r => setTimeout(r, 2000));
+                await useAuthStore.getState().refreshProfile();
+                const currentProfile = useAuthStore.getState().profile;
+                if (currentProfile?.plan === targetPlan) {
+                  break;
+                }
+                attempts++;
+              }
+              
+              toast.success("Payment successful!", { id: loadingToastId });
+              navigate('/payment/success');
+              resolve(response);
+            } catch (error) {
+              toast.dismiss(loadingToastId);
+              reject(error);
+            }
           },
           modal: {
             ondismiss: () => {
